@@ -1,0 +1,22 @@
+
+public class B {
+	
+		
+		public void methodB1()
+		{
+			A a = new A();
+			a.method3();
+		}
+		
+		public void methodB2()
+		{
+			methodB1();
+		}
+		
+		public void methodB3()
+		{
+			
+		}
+		
+	
+}

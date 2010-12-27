@@ -1,0 +1,3 @@
+INDEX VERSION 1.126+I:\vlad\serios\faculta\licenta\java\.metadata\.plugins\org.eclipse.jdt.core
+1837452619.index
+2346297546.index
