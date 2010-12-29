@@ -6,20 +6,22 @@
 %nod contine metode : id unic generat de mine, id important din fisier
 %nume metoda + lista metode
 
-%:- dynamic nod/4.
+:- dynamic nod/4.
 run(X):-
 	consult('I:/vlad/serios/faculta/licenta/licentavlad/test1.pl'),
 	%writef('afsadf'),
-%	Index is 1,
+	I is 11,
 	callT(X,_,Z,_,_,_,_),
-	writef(Z),
+	write(Z),
 
 	methodT(Z,_,B,_,_,_,_),
-	assert(nod(1,Z,B,[])),
-%	Index is Index + 1;
+	assert(nod(I,Z,B,[])),
+
 	writef(B).
 
 
 main(Z):- open('I:/vlad/serios/faculta/licenta/licentavlad/test1.pl', read, Z), set_output(Z), listing,
 set_output(screen), close(Z).
 
+
+retr(X):- retractall(X).
