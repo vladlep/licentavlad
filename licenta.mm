@@ -50,7 +50,10 @@
 </node>
 <node COLOR="#990000" CREATED="1293482035109" ID="Freemind_Link_1736593503" MODIFIED="1293482398187" TEXT="deschid in module ">
 <font NAME="SansSerif" SIZE="14"/>
-<node COLOR="#111111" CREATED="1293482048843" ID="Freemind_Link_1115668120" MODIFIED="1293482398187" TEXT="cum fac asta ? "/>
+<node COLOR="#111111" CREATED="1293482048843" ID="Freemind_Link_1115668120" MODIFIED="1293618696582" TEXT="cum fac asta ? ">
+<icon BUILTIN="button_ok"/>
+<node COLOR="#111111" CREATED="1293618661606" ID="Freemind_Link_434464498" MODIFIED="1293618679047" TEXT="module(nume) ... daca exista il deschide daca nu il creeaza"/>
+</node>
 <node COLOR="#111111" CREATED="1293482053281" ID="Freemind_Link_1937936634" MODIFIED="1293482398171" TEXT="nu se incarca prea mult memoria ?"/>
 </node>
 <node COLOR="#990000" CREATED="1293482062421" ID="Freemind_Link_892328601" MODIFIED="1293482398187" TEXT="gasesc comanda de un-consult">
@@ -83,6 +86,14 @@
 </node>
 <node COLOR="#00b439" CREATED="1293482190859" ID="Freemind_Link_1790137954" MODIFIED="1293482398156" TEXT="cum afisez rezultatele">
 <font NAME="SansSerif" SIZE="16"/>
+</node>
+<node COLOR="#00b439" CREATED="1293619018400" ID="Freemind_Link_658939679" MODIFIED="1293619033581" TEXT="cum se creeaza factbaseul pr : ">
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1293619034507" ID="Freemind_Link_717892938" MODIFIED="1293619070069" TEXT="polimorfism, subclase, clase implementeaza interfetem, paseaza superclasa ca param ? ">
+<font NAME="SansSerif" SIZE="14"/>
+<node COLOR="#111111" CREATED="1293619076424" ID="Freemind_Link_601429824" MODIFIED="1293619101215" TEXT="recunoaste subclasa sau nu-&gt; doar interfata fara implementarea metodei"/>
+<node COLOR="#111111" CREATED="1293619101392" ID="Freemind_Link_102519664" MODIFIED="1293619128822" TEXT="id met din interfata fata de cel din subclasa cum este ?"/>
+</node>
 </node>
 </node>
 <node COLOR="#0033ff" CREATED="1293482829984" ID="Freemind_Link_1890660152" MODIFIED="1293482840781" POSITION="right" TEXT="not sure if useful yet" VSHIFT="72">
