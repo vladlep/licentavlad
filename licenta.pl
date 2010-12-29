@@ -27,10 +27,7 @@ run(X):-
 main(Z):- open('I:/vlad/serios/faculta/licenta/licentavlad/test1.pl', read, Z), set_output(Z), listing,
 set_output(screen), close(Z).
 
-loadFile(Root,File):-
-%	consult('C:/Users/vll/vlad/licentavlad/test1.pl'),Root =1, File
-%	=2.
-	consult(Root+ File).
+loadFile(File):- consult(File).
 
 clearDatabase:-
 	retractall(classT(_,_,_,_)),
@@ -54,9 +51,12 @@ clearDatabase:-
 
 
 
-calcTree(Root,File,Tree):- loadFile(Root,File),
-%	clearDatabase,
-	classT(Tree,_,_,_,_,_,_).
+calcTree(File,Tree):- loadFile(File),
+	callT(Tree,_,_,_,_,_,_).
 
 
-testCalc(Tree):- calcTree('C:/Users/vll/vlad/licentavlad/','test1.pl',Tree).
+testCalc(Tree):- calcTree('C:/Users/vll/vlad/licentavlad/test1.pl',Tree).
+
+
+
+
