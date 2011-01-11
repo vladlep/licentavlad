@@ -2,8 +2,8 @@
 <!-- To view this file, download free mind mapping software FreeMind from http://freemind.sourceforge.net -->
 <node COLOR="#000000" CREATED="1293481635953" ID="Freemind_Link_270099476" MODIFIED="1293482545828" TEXT="licenta">
 <font NAME="SansSerif" SIZE="20"/>
-<hook NAME="accessories/plugins/AutomaticLayout.properties"/>
 <hook NAME="accessories/plugins/CreationModificationPlugin_new.properties"/>
+<hook NAME="accessories/plugins/AutomaticLayout.properties"/>
 <node COLOR="#0033ff" CREATED="1293481963765" ID="Freemind_Link_407792461" MODIFIED="1293482398234" POSITION="right" TEXT="dev steps : ">
 <font NAME="SansSerif" SIZE="18"/>
 <node COLOR="#00b439" CREATED="1293481663421" ID="_" MODIFIED="1293482539109" TEXT=" creez arbori noi cu metode pornind de la call-uri">
@@ -91,8 +91,11 @@
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1293619034507" ID="Freemind_Link_717892938" MODIFIED="1293619070069" TEXT="polimorfism, subclase, clase implementeaza interfetem, paseaza superclasa ca param ? ">
 <font NAME="SansSerif" SIZE="14"/>
-<node COLOR="#111111" CREATED="1293619076424" ID="Freemind_Link_601429824" MODIFIED="1293619101215" TEXT="recunoaste subclasa sau nu-&gt; doar interfata fara implementarea metodei"/>
+<node COLOR="#111111" CREATED="1293619076424" ID="Freemind_Link_601429824" MODIFIED="1293619101215" TEXT="recunoaste subclasa sau nu-&gt; doar interfata fara implementarea metodei">
+<node COLOR="#111111" CREATED="1294757298046" ID="Freemind_Link_1695383105" MODIFIED="1294757303125" TEXT="R: doar interfarta"/>
+</node>
 <node COLOR="#111111" CREATED="1293619101392" ID="Freemind_Link_102519664" MODIFIED="1293619128822" TEXT="id met din interfata fata de cel din subclasa cum este ?"/>
+<node COLOR="#111111" CREATED="1294757288437" ID="Freemind_Link_1122589130" MODIFIED="1294757288453" TEXT=""/>
 </node>
 </node>
 </node>
@@ -102,6 +105,12 @@
 <font NAME="SansSerif" SIZE="16"/>
 <node COLOR="#990000" CREATED="1293482875250" ID="Freemind_Link_1228317460" MODIFIED="1293482886062" TEXT="see bookM 2">
 <edge WIDTH="thin"/>
+<font NAME="SansSerif" SIZE="14"/>
+</node>
+</node>
+<node COLOR="#00b439" CREATED="1293796742734" ID="Freemind_Link_1093201976" MODIFIED="1293796748843" TEXT="concatenez 2 atomi : ">
+<font NAME="SansSerif" SIZE="16"/>
+<node COLOR="#990000" CREATED="1293796759859" ID="Freemind_Link_1159726365" MODIFIED="1293796761093" TEXT="atom_concat(&apos;licen&apos;,&apos;ta.pl&apos;,T),consult(T).">
 <font NAME="SansSerif" SIZE="14"/>
 </node>
 </node>
