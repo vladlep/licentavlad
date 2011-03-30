@@ -3,25 +3,6 @@
 % then enter the text in that file's own buffer.
 
 
-%nod contine metode : id unic generat de mine, id important din fisier
-%nume metoda + lista metode
-
-:- dynamic nod/3.
-addToCallList(Term,List,Result) :- not(member(Term,List)), Result = [Term|List].
-
-
-run(X):-
-	consult('C:/Users/vll/vlad/licentavlad/test1.pl'),
-	%writef('afsadf'),
-	CallList= [],
-	callT(X,_,Z,_,_,_,_),
-	addToCallList(X,CallList,Result1),
-	write(Result1),
-
-	methodT(Z,_,B,_,_,_,_),
-	assert(nod(Z,B,[])),
-
-	writef(B).
 %return the number of elements form a list. The result is attached to
 %the variable NrOfElements
 count([],0).
@@ -38,22 +19,46 @@ calcNrAtrib(Modul,IdClasa,Nr) :-
 % calculez care e nr de metode pentru o clasa dintr-un modul
 
 
+
 %incarca un proiect a carui nume e trimis ca parametru intr-un modul cu
 %acelasi nume.
-%
+%Prj - in param . Numele proiectului.
 load(Prj):-
 	module(Prj),
 	atom_concat('c:/users/vll/vlad/licentavlad/',Prj,Result),
 	consult(Result).
 
-%	consult('c:/users/vll/vlad/licentavlad/licenta.pl'),
-%	module(prj2),
-%	consult('c:/users/vll/vlad/licentavlad/licenta.pl'),
-%	consult('c:/users/vll/vlad/licentavlad/stockMarket.pl').
 
+%FIXME ... NU e buna. Trebuie rafinata. Sa ma uit in prj de anul trecut
+myClass(Prj1, AllCls) :-
+	module(Prj1),
+	classT(AllCls,_,Nume,_),
+	AllCls >17311,
+	write(Nume).
+testMyClass(ID):-
+	Prj1 = 'stockMarket.pl',
+	load(Prj1),
+	myClass(Prj1,ID).
 
-
-comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2).
+%Prj1 - in param. Name of first project
+%Prj2 - in param. Name of second project
+%ClassID1 - out param. The id of the class from the first prj that
+%matches  the class with the ClassID2 from the second prj
+%ClassID2 - out param. The id of the class from the second prj that
+%matches  the class with the ClassID1 from the first prj
+comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2):-
+	myClass(Prj1,AllCls),
+	calcNrAtrib(Prj1,AllCls,Nr),
+	write(Nr),
+	myClass(Prj2,Cls2),
+	calcNrAtrib(Prj2,Cls2,Nr2),
+	write(Nr2),
+	Dif = Nr - Nr2 ,
+	Dif > 0, Dif <2,
+	ClassID1 = AllCls,
+	ClassID2 = Cls2.
+testCompare2(R):-
+	findall(Id1,comapareClassLevel('test1.pl',Id1,'stockMarket.pl',_),R).
 
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
@@ -62,9 +67,34 @@ comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2).
 compare2Prj(Prj1,Prj2) :-
 	load(Prj1),
 	load(Prj2),
+	comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2),
+	writef("clase ce satisfac cond :"),
+	write(ClassID1),
+	write(ClassID2).
 
-	comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2).
 
+
+
+
+
+%old function. Should be deleted in the end. Now used for inspiration.
+
+%nod contine metode : id unic generat de mine, id important din fisier
+%nume metoda + lista metode
+:- dynamic nod/3.
+addToCallList(Term,List,Result) :- not(member(Term,List)), Result = [Term|List].
+run(X):-
+	consult('C:/Users/vll/vlad/licentavlad/test1.pl'),
+	%writef('afsadf'),
+	CallList= [],
+	callT(X,_,Z,_,_,_,_),
+	addToCallList(X,CallList,Result1),
+	write(Result1),
+
+	methodT(Z,_,B,_,_,_,_),
+	assert(nod(Z,B,[])),
+
+	writef(B).
 
 
 main(Z):- open('I:/vlad/serios/faculta/licenta/licentavlad/test1.pl', read, Z), set_output(Z), listing,
