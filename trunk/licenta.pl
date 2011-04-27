@@ -35,6 +35,7 @@ myClass(Prj1, AllCls) :-
 	classT(AllCls,_,Nume,_),
 	AllCls >17311,
 	write(Nume).
+myClasses(Prj).
 testMyClass(ID):-
 	Prj1 = 'stockMarket.pl',
 	load(Prj1),
