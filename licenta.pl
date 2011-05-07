@@ -25,22 +25,31 @@ calcNrAtrib(Modul,IdClasa,Nr) :-
 %Prj - in param . Numele proiectului.
 load(Prj):-
 	module(Prj),
-	atom_concat('c:/users/vll/vlad/licentavlad/',Prj,Result),
+	atom_concat('c:/users/vll/vlad/LICENTA/licentavlad/',Prj,Result),
 	consult(Result).
 
 
-%FIXME ... NU e buna. Trebuie rafinata. Sa ma uit in prj de anul trecut
-myClass(Prj1, AllCls) :-
-	module(Prj1),
-	classT(AllCls,_,Nume,_),
-	AllCls >17311,
-	write(Nume).
-myClasses(Prj).
-testMyClass(ID):-
-	Prj1 = 'stockMarket.pl',
-	load(Prj1),
-	myClass(Prj1,ID).
 
+%FIXME ... NU e buna. Trebuie rafinata. Sa ma uit in prj de anul trecut
+myClass(Prj, AllCls) :-
+	module(Prj),
+	classT(AllCls,Cu,_,_),
+	compilationUnitT(Cu,_,Fid,_,_),
+	fileS(Fid,Src,_),
+	sourceFolderS(Src,Pid,_),
+	projectS(Pid,_,_,_,_)
+%	write(N)
+	.
+testMyClass(ID):-
+	Prj1 = 'test1.pl',
+	load(Prj1),
+	myClass(Prj1,ID),
+	write(ID),
+	writef("  ").
+
+testCountMyClass(Nr):-
+	findall(ID,testMyClass(ID),Result),
+	count(Result,Nr).
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
 %ClassID1 - out param. The id of the class from the first prj that
@@ -50,10 +59,10 @@ testMyClass(ID):-
 comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2):-
 	myClass(Prj1,AllCls),
 	calcNrAtrib(Prj1,AllCls,Nr),
-	write(Nr),
+%	write(Nr),
 	myClass(Prj2,Cls2),
 	calcNrAtrib(Prj2,Cls2,Nr2),
-	write(Nr2),
+%	write(Nr2),
 	Dif = Nr - Nr2 ,
 	Dif > 0, Dif <2,
 	ClassID1 = AllCls,
@@ -71,9 +80,11 @@ compare2Prj(Prj1,Prj2) :-
 	comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2),
 	writef("clase ce satisfac cond :"),
 	write(ClassID1),
-	write(ClassID2).
+	writef(" "),
+	write(ClassID2),
+	writef(" ").
 
-
+main:- compare2Prj('test1.pl','test1.pl').
 
 
 
@@ -85,7 +96,7 @@ compare2Prj(Prj1,Prj2) :-
 :- dynamic nod/3.
 addToCallList(Term,List,Result) :- not(member(Term,List)), Result = [Term|List].
 run(X):-
-	consult('C:/Users/vll/vlad/licentavlad/test1.pl'),
+	consult('C:/Users/vll/vlad/LICENTA/licentavlad/test1.pl'),
 	%writef('afsadf'),
 	CallList= [],
 	callT(X,_,Z,_,_,_,_),

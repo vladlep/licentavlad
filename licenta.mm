@@ -4,24 +4,9 @@
 <font NAME="SansSerif" SIZE="20"/>
 <hook NAME="accessories/plugins/CreationModificationPlugin_new.properties"/>
 <hook NAME="accessories/plugins/AutomaticLayout.properties"/>
-<node COLOR="#0033ff" CREATED="1293481963765" ID="Freemind_Link_407792461" MODIFIED="1293482398234" POSITION="right" TEXT="dev steps : ">
+<node COLOR="#0033ff" CREATED="1293481963765" ID="Freemind_Link_407792461" MODIFIED="1304353096805" POSITION="right" TEXT="dev steps : ">
 <font NAME="SansSerif" SIZE="18"/>
-<node COLOR="#00b439" CREATED="1293481663421" ID="_" MODIFIED="1293482539109" TEXT=" creez arbori noi cu metode pornind de la call-uri">
-<font NAME="SansSerif" SIZE="16"/>
-<node COLOR="#990000" CREATED="1293482295812" ID="Freemind_Link_1174414198" MODIFIED="1293482398234" TEXT="retin o lista de passed calluri ">
-<font NAME="SansSerif" SIZE="14"/>
-<node COLOR="#111111" CREATED="1293482323187" ID="Freemind_Link_330959467" MODIFIED="1293482398218" TEXT=" rezolva asta problema recursivitatii?"/>
-</node>
-<node COLOR="#990000" CREATED="1293482303921" ID="Freemind_Link_418164863" MODIFIED="1293482398234" TEXT="un call leaga 2 metode ">
-<font NAME="SansSerif" SIZE="14"/>
-</node>
-</node>
-<node COLOR="#00b439" CREATED="1293481799218" ID="Freemind_Link_134096361" MODIFIED="1293482398218" TEXT=" creez abrori pentru 2 factbase-uri">
-<font NAME="SansSerif" SIZE="16"/>
-</node>
-<node COLOR="#00b439" CREATED="1293481688953" ID="Freemind_Link_1942693815" MODIFIED="1293482398218" TEXT=" compar arborii si gasesc daca sunt comuni / nu">
-<font NAME="SansSerif" SIZE="16"/>
-</node>
+<icon BUILTIN="password"/>
 <node COLOR="#00b439" CREATED="1293481706859" ID="Freemind_Link_1621273347" MODIFIED="1293482398218" TEXT="optional adaug metrici in plus pe langa arbosri">
 <font ITALIC="true" NAME="SansSerif" SIZE="16"/>
 <icon BUILTIN="help"/>
@@ -68,12 +53,6 @@
 <node COLOR="#111111" CREATED="1293482125765" ID="Freemind_Link_438930954" MODIFIED="1293482398171" TEXT="trebuie sa sterg lista oricum cu o comanda"/>
 <node COLOR="#111111" CREATED="1293482175468" ID="Freemind_Link_1026536198" MODIFIED="1293482398171" TEXT="abolish ? verific daca merge"/>
 </node>
-</node>
-<node COLOR="#00b439" CREATED="1293482183703" ID="Freemind_Link_1010909261" MODIFIED="1293482398171" TEXT="cum compar arborii ">
-<font NAME="SansSerif" SIZE="16"/>
-</node>
-<node COLOR="#00b439" CREATED="1293482204781" ID="Freemind_Link_598880407" MODIFIED="1293482398171" TEXT="cum reprezint arborii ? e mai avantajos sa ii unesc sau nu ?">
-<font NAME="SansSerif" SIZE="16"/>
 </node>
 <node COLOR="#00b439" CREATED="1293482218031" ID="Freemind_Link_1986259140" MODIFIED="1293482398171" TEXT="problema recursivitatii ">
 <font NAME="SansSerif" SIZE="16"/>
