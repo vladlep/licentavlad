@@ -1,75 +1,23 @@
-% This buffer is for notes you don't want to save.
-% If you want to create a file, visit that file with C-x C-f,
-% then enter the text in that file's own buffer.
+:-dynamic match/2.
+%ClassID1 - in param. The id of the class from the first prj
+%ClassID2 - in param. The id of the class from the second prj
+%return : true if classes match.
+compareClassLevel(ClassID1,ClassID2):-
+	compareNrAtrib(ClassID1,ClassID2).
 
-
-%return the number of elements form a list. The result is attached to
-%the variable NrOfElements
-count([],0).
-count([_|Tail],NrOfElements) :- count(Tail,Left), NrOfElements is Left+1.
-
-% calculez care e nr de atribute pentru o clasa dintr-un modul
-calcNrAtrib(Modul,IdClasa,Nr) :-
-	module(Modul),
-	findall(X,fieldT(X,IdClasa,_,_,_),Result),
-	count(Result,Nr).
-
-
-
-% calculez care e nr de metode pentru o clasa dintr-un modul
-
-
-
-%incarca un proiect a carui nume e trimis ca parametru intr-un modul cu
-%acelasi nume.
-%Prj - in param . Numele proiectului.
-load(Prj):-
-	module(Prj),
-	atom_concat('c:/users/vll/vlad/LICENTA/licentavlad/',Prj,Result),
-	consult(Result).
-
-
-
-%FIXME ... NU e buna. Trebuie rafinata. Sa ma uit in prj de anul trecut
-myClass(Prj, AllCls) :-
-	module(Prj),
-	classT(AllCls,Cu,_,_),
-	compilationUnitT(Cu,_,Fid,_,_),
-	fileS(Fid,Src,_),
-	sourceFolderS(Src,Pid,_),
-	projectS(Pid,_,_,_,_)
-%	write(N)
-	.
-testMyClass(ID):-
-	Prj1 = 'test1.pl',
-	load(Prj1),
-	myClass(Prj1,ID),
-	write(ID),
-	writef("  ").
-
-testCountMyClass(Nr):-
-	findall(ID,testMyClass(ID),Result),
-	count(Result,Nr).
-%Prj1 - in param. Name of first project
-%Prj2 - in param. Name of second project
-%ClassID1 - out param. The id of the class from the first prj that
-%matches  the class with the ClassID2 from the second prj
-%ClassID2 - out param. The id of the class from the second prj that
-%matches  the class with the ClassID1 from the first prj
-comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2):-
-	myClass(Prj1,AllCls),
-	calcNrAtrib(Prj1,AllCls,Nr),
-%	write(Nr),
-	myClass(Prj2,Cls2),
-	calcNrAtrib(Prj2,Cls2,Nr2),
+%ClassID1 - in param. The id of the class from the first prj
+%ClassID2 - in param. The id of the class from the second prj
+%return : true if the number of atributes is similar.
+compareNrAtrib(Class1,Class2):-
+	calcNrAtrib1(Class1,Nr1),
+	calcNrAtrib1(Class2,Nr1),
+%	write(Nr1),
 %	write(Nr2),
 	Dif = Nr - Nr2 ,
 	Dif > 0, Dif <2,
-	ClassID1 = AllCls,
-	ClassID2 = Cls2.
-testCompare2(R):-
-	findall(Id1,comapareClassLevel('test1.pl',Id1,'stockMarket.pl',_),R).
+	ClassID1 = AllCls
 
+	.
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
@@ -77,14 +25,34 @@ testCompare2(R):-
 compare2Prj(Prj1,Prj2) :-
 	load(Prj1),
 	load(Prj2),
-	comapareClassLevel(Prj1,ClassID1,Prj2,ClassID2),
+	compareClassLevel(Prj1,ClassID1,Prj2,ClassID2),
 	writef("clase ce satisfac cond :"),
 	write(ClassID1),
 	writef(" "),
 	write(ClassID2),
 	writef(" ").
 
+run:- RootDir = 'F:/serios/faculta/licenta/licentavlad/',
+	atom_concat(RootDir,'IProject1.pl',Path1),
+	atom_concat(RootDir,'IProject2.pl',Path2),
+	use_module(Path1),
+	use_module(Path2),
+	load1('polimorfism.pl'),
+	load2('test2.pl'),
+	myClass1(Id1)	,
+	myClass2(Id2),
+	compareClassLevel(Id1,Id2),
+	write(Id1),
+	writef(" - "),
+	write(Id2),
+	writef("  \n")
+	.
+
+
 main:- compare2Prj('test1.pl','test1.pl').
+
+
+
 
 
 
@@ -94,8 +62,9 @@ main:- compare2Prj('test1.pl','test1.pl').
 %nod contine metode : id unic generat de mine, id important din fisier
 %nume metoda + lista metode
 :- dynamic nod/3.
-addToCallList(Term,List,Result) :- not(member(Term,List)), Result = [Term|List].
-run(X):-
+old_addToCallList(Term,List,Result) :- not(member(Term,List)),
+	Result = [Term|List].
+old_run(X):-
 	consult('C:/Users/vll/vlad/LICENTA/licentavlad/test1.pl'),
 	%writef('afsadf'),
 	CallList= [],
@@ -109,54 +78,8 @@ run(X):-
 	writef(B).
 
 
-main(Z):- open('I:/vlad/serios/faculta/licenta/licentavlad/test1.pl', read, Z), set_output(Z), listing,
+old_main(Z):- open('F:/serios/faculta/licenta/licentavlad/test1.pl', read, Z), set_output(Z), listing,
 set_output(screen), close(Z).
-
-loadFile(File):- consult(File).
-
-
-
-clearDatabase:-
-	retractall(classT(_,_,_,_)),
-	retractall(blockT(_,_,_,_)),
-	retractall(callT(_,_,_,_,_,_,_)),
-	retractall(methodT(_,_,_,_,_,_,_)),
-	retractall(constructorT(_,_,_,_,_)),
-        retractall(fieldT(_,_,_,_,_)),
-        retractall(literalT(_,_,_,_,_)),
-        retractall(extendsT(_,_)),
-        retractall(implementsT(_,_)),
-        retractall(externT(_)),
-        retractall(interfaceT(_)),
-        retractall(modifierT(_,_)),
-        retractall(compilationUnitT(_,_,_,_,_)),
-        retractall(globalIds(_,_,_,_)),
-        retractall(globalIds(_,_)),
-        retractall(globalIds(_,_,_)),
-        retractall(ri_globalIds(_,_,_)),
-	retractall(paramT(_,_,_,_)).
-
-
-
-calcTree(File,Tree):- loadFile(File),
-	callT(Tree,_,_,_,_,_,_).
-
-
-testCalc(Tree):- calcTree('C:/Users/vll/vlad/licentavlad/test1.pl',Tree).
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
