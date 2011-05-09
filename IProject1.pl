@@ -1,4 +1,4 @@
-:-module(mod1,[myClass1/1,load1/1]).
+:-module(mod1,[myClass1/1,load1/1,calcNrAtrib1/2]).
 :-include('F:/serios/faculta/licenta/licentavlad/common.pl').
 
 load1(Prj):-
