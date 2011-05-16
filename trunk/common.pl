@@ -8,16 +8,20 @@ load(Prj):-
 	consult(Result).
 
 
-%-PRIVATE
-%FIXME ... NU e buna. Trebuie rafinata. Sa ma uit in prj de anul trecut
-myClass(AllCls) :-
-	classT(AllCls,Cu,_,_),
+%+PUBLIC
+%Returnes the IDs of the classes from a project.
+myClass(AllCls,Name) :-
+	classT(AllCls,Cu,Name,_),
 	compilationUnitT(Cu,_,Fid,_,_),
 	fileS(Fid,Src,_),
 	sourceFolderS(Src,Pid,_),
-	projectS(Pid,_,_,_,_)
-%	write(N)
-	.
+	projectS(Pid,_,_,_,_).
+
+%+PUBLIC
+%Returnes the number of classes from a project.
+nrOfClass(Nr):-	findall(X,fileS(X,_,_),Result),
+	count(Result,Nr).
+
 %-PRIVATE
 %return the number of elements form a list. The result is attached to
 %the variable NrOfElements
@@ -30,8 +34,38 @@ calcNrAtrib(IdClasa,Nr) :-
 	findall(X,fieldT(X,IdClasa,_,_,_),Result),
 	count(Result,Nr).
 
+%+PUBLIC
+% calculez cate metode are o clasa dintr-un modul
+calcNrMet(IdClasa,Nr):-findall(X,methodT(X,IdClasa,_,_,_,_,_),Result),
+	count(Result,Nr).
 
-% calculez care e nr de metode pentru o clasa dintr-un modul
+%+PUBLIC
+% calculez cate interfete implementeaza o clasa dintr-un modul.
+calcNrInterf(IdClasa,Nr):-findall(IdClasa,implementsT(IdClasa,_),Result),
+	count(Result,Nr).
+
+%+PUBLIC
+%calculez daca clasa extinde o superclasa
+calcNrExtends(IdClasa,Nr):-(extendsT(IdClasa,_),Nr=1);Nr=0.
+
+%+PUBLIC
+%returns the id of the methods from a class
+methodsOfClass(IdClasa,IdMethod):-methodT(IdMethod,IdClasa,_,_,_,_,_).
+
+%+PUBLIC
+%calculez cate while-uri sunt intr-o metoda
+nrOfWhile(MethodId,Nr):-findall(MethodId,whileT(_,_,MethodId,_,_),Result),
+	count(Result,Nr).
+
+%+PUBLIC
+%calculez cate if-uri sunt intr-o metoda
+nrOfIf(MethodId,Nr):-findall(MethodId,ifT(_,_,MethodId,_,_),Result),
+	count(Result,Nr).
+
+%+PUBLIC
+%calculez cate while-uri sunt intr-o metoda
+nrOperators(IdMethod,Operator,Nr):-findall(IdMethod,operationT(_,_,IdMethod,_,Operator,_),Result),
+	count(Result,Nr).
 
 %+PUBLIC
 %remove all entrie from the database
@@ -54,6 +88,3 @@ clearDatabase:-
         retractall(globalIds(_,_,_)),
         retractall(ri_globalIds(_,_,_)),
 	retractall(paramT(_,_,_,_)).
-
-
-
