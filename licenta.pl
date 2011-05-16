@@ -1,4 +1,6 @@
-:-dynamic match/2.
+%Structure of mathc : Id1, Name 1, Id2, name2
+:-dynamic match/4. % structure that stores the matching/copied classes.
+
 %ClassID1 - in param. The id of the class from the first prj
 %ClassID2 - in param. The id of the class from the second prj
 %return : true if classes match.
@@ -13,54 +15,40 @@ compareClassLevel(ClassID1,ClassID2):-
 %return : true if the number of atributes is similar.
 compareNrAtrib(Class1,Class2):-
 	calcNrAtrib1(Class1,Nr1),
-	calcNrAtrib1(Class2,Nr1)
+	calcNrAtrib1(Class2,Nr1) .
 %	write(Nr1),
 %	write(Nr2),
 %	Dif = Nr - Nr2 ,
 %	Dif > 0, Dif <2,
 %	Class1 = AllCls
 
-	.
+
+%generates combination of classes and compares them.
+%If they are copied, they are asserted as match classes.
+
+generateAllMatchingClasses(Name1,Name2):-
+
+	myClass1(Id1,Name1),
+	myClass2(Id2,Name2),
+	not(match(Id1,_,_,_)),
+	not(match(_,_,Id2,_)),
+%	compare2Classes(Id1,Id2),
+	assert(match(Id1,Name1,Id2,Name2)).
+
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
-
-compare2Prj(Prj1,Prj2) :-
-	load(Prj1),
-	load(Prj2),
-	compareClassLevel(Prj1,ClassID1,Prj2,ClassID2),
-	writef("clase ce satisfac cond :"),
-	write(ClassID1),
-	writef(" "),
-	write(ClassID2),
-	writef(" ").
-generateAllMatchingClasses(Id1,Id2):-
-	myClass1(Id1)	,
-	myClass2(Id2),
-	not(match(Id1,_)),
-	not(match(_,Id2)),
-	compare2Classes(Id1,Id2), % imi trebuie un findall pe undeva ca daca nu imi sterge dupa fiecare
-	assert(match(Id1,Id2)).
-
-
 run:- RootDir = 'F:/serios/faculta/licenta/licentavlad/',
 	atom_concat(RootDir,'IProject1.pl',Path1),
 	atom_concat(RootDir,'IProject2.pl',Path2),
 	use_module(Path1),
 	use_module(Path2),
-	load1('polimorfism.pl'),
-	load2('test2.pl'),
-	findall(Id1-Id2,generateAllMatchingClasses(Id1,Id2),Result),
+	load1('webserver1.qlf'),
+	load2('webserver2.qlf'),
+	findall(Name1-Name2,generateAllMatchingClasses(Name1,Name2),Result),
+	listing(match),
 	write(Result),
-	retractall(match(_,_)).
-
-
-main:- compare2Prj('test1.pl','test1.pl').
-
-
-
-
-
+	retractall(match(_,_,_,_)).
 
 
 %old function. Should be deleted in the end. Now used for inspiration.
