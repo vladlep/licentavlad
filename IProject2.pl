@@ -13,7 +13,6 @@ myClass2(ClassId,Name):-
 
 calcNrAtrib2(IdClasa,Nr):- calcNrAtrib(IdClasa,Nr) .
 
-clearDatabase2:-clearDatabase.
 
 calcNrMet2(IdClasa,Nr):-calcNrMet(IdClasa,Nr).
 
@@ -29,5 +28,5 @@ nrOfIf2(MethodId,Nr):-nrOfIf(MethodId,Nr).
 
 nrOperators2(IdMethod,Operator,Nr):-nrOperators(IdMethod,Operator,Nr).
 
-
+clearDatabase2:-clearDatabase.
 
