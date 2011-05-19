@@ -46,7 +46,10 @@ calcNrInterf(IdClasa,Nr):-findall(IdClasa,implementsT(IdClasa,_),Result),
 
 %+PUBLIC
 %calculez daca clasa extinde o superclasa
-calcNrExtends(IdClasa,Nr):-(extendsT(IdClasa,_),Nr=1);Nr=0.
+calcNrExtends(IdClasa,Nr):-findall(IdClasa,extendsT(IdClasa,_),Result),
+	count(Result,Nr).
+
+%	(extendsT(IdClasa,_),Nr=1,!); Nr=0.
 
 %+PUBLIC
 %returns the id of the methods from a class
