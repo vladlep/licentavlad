@@ -13,9 +13,17 @@ load(Prj):-
 myClass(AllCls,Name) :-
 	classT(AllCls,Cu,Name,_),
 	compilationUnitT(Cu,_,Fid,_,_),
-	fileS(Fid,Src,_),
+	fileS(Fid,Src,Path),
 	sourceFolderS(Src,Pid,_),
-	projectS(Pid,_,_,_,_).
+	projectS(Pid,_,_,_,_),
+	findall(PartPath,common(Path,PartPath),Result),
+	count(Result,Nr),
+	Nr=0.
+
+common(Path,Nr):-commonClass(PartOfPath),
+	( atom_concat(Nr,PartOfPath,Path);
+ 	  atom_concat(PartOfPath,Nr,Path) ).
+
 
 %+PUBLIC
 %Returnes the number of classes from a project.
@@ -53,16 +61,22 @@ calcNrExtends(IdClasa,Nr):-findall(IdClasa,extendsT(IdClasa,_),Result),
 
 %+PUBLIC
 %returns the id of the methods from a class
-methodsOfClass(IdClasa,IdMethod):-methodT(IdMethod,IdClasa,_,_,_,_,_).
+methodsOfClass(IdClasa,IdMethod,Name):-methodT(IdMethod,IdClasa,Name,_,_,_,_).
 
 %+PUBLIC
-%calculez cate while-uri sunt intr-o metoda
-nrOfWhile(MethodId,Nr):-findall(MethodId,whileT(_,_,MethodId,_,_),Result),
-	count(Result,Nr).
+%calculez cate while/for/do while-uri  sunt intr-o metoda
+nrOfCycles(MethodId,Nr):-findall(MethodId,whileT(_,_,MethodId,_,_),While),
+	count(While,NrWhile),
+	findall(MethodId,doWhileT(_,_,MethodId,_,_),DoWhile),
+	count(DoWhile,NrDoWhile),
+	findall(MethodId,forT(_,_,MethodId,_,_,_,_),For),
+	count(For,NrFor),
+	Nr is (NrWhile + NrDoWhile + NrFor)
+	.
 
 %+PUBLIC
 %calculez cate if-uri sunt intr-o metoda
-nrOfIf(MethodId,Nr):-findall(MethodId,ifT(_,_,MethodId,_,_),Result),
+nrOfIf(MethodId,Nr):-findall(MethodId,ifT(_,_,MethodId,_,_,_),Result),
 	count(Result,Nr).
 
 %+PUBLIC

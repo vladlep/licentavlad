@@ -11,7 +11,13 @@ public void metodaI() {
 			;
 		else
 			;
-		for(;;);	
+		for(;;) break;	
+		break;
 	}
+	
+	do{
+	;	
+	}while(true);
+	
 }
 }
