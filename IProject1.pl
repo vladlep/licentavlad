@@ -1,9 +1,9 @@
 :-module(mod1,[myClass1/2,load1/1,calcNrAtrib1/2,clearDatabase1/0,calcNrMet1/2,
 	       calcNrInterf1/2,calcNrExtends1/2,methodsOfClass1/3,nrOfCycles1/2,
-	       nrOfIf1/2,nrOperators1/3,callT1/3]).
+	       nrOfIf1/2,nrOperators1/3,callT1/3,isInterface1/1]).
 
-:-include('F:/serios/faculta/licenta/licentavlad/utilities.pl').
-:-include('F:/serios/faculta/licenta/licentavlad/commonClasses.pl').
+:-include('./utilities.pl').
+:-include('./commonClasses.pl').
 
 load1(Prj):-
 %	consult('F:/serios/faculta/licenta/licentavlad/common.pl'),
@@ -31,7 +31,9 @@ nrOfIf1(MethodId,Nr):-nrOfIf(MethodId,Nr).
 
 nrOperators1(IdMethod,Operator,Nr):-nrOperators(IdMethod,Operator,Nr).
 
-callT1(MethodId1,CalledClassId1,CalledMetId1):-callT(_,_,MethodId1,_,_,_,CalledMetId1),methodT(CalledMetId1,CalledClassId1,_,_,_,_,_).
+callT1(MethodId1,CalledClassId1,CalledMetId1):-
+	callDep(MethodId1,CalledClassId1,CalledMetId1).
+isInterface1(ClassId):-isInterface(ClassId).
 
 
 

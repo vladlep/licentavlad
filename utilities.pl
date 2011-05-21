@@ -4,7 +4,7 @@
 %Prj - in param . Numele proiectului.
 load(Prj):-
 	%atom_concat('c:/users/vll/vlad/LICENTA/licentavlad/factbse/',Prj,Result),
-	atom_concat('F:/serios/faculta/licenta/licentavlad/factbase/',Prj,Result),
+	atom_concat('./factbase/',Prj,Result),
 	consult(Result).
 
 
@@ -84,6 +84,18 @@ nrOfIf(MethodId,Nr):-findall(MethodId,ifT(_,_,MethodId,_,_,_),Result),
 nrOperators(IdMethod,Operator,Nr):-findall(IdMethod,operationT(_,_,IdMethod,_,Operator,_),Result),
 	count(Result,Nr).
 
+%+PUBLIC
+%returnes all the calles that are made from a method
+callDep(MethodId,CalledClassId,CalledMetId):-
+	callT(_,_,MethodId,_,Name,_,CalledMetId),
+	methodT(CalledMetId,CalledClassId,_,_,_,_,_),
+	myClass(CalledClassId,_),
+	writef(" : "),write(Name).
+
+%+PUBLIC
+%returnes true if class is an interface.
+isInterface(ClassId):-
+	interfaceT(ClassId).
 %+PUBLIC
 %remove all entrie from the database
 clearDatabase:-
