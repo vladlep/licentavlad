@@ -4,7 +4,7 @@
 %Prj - in param . Numele proiectului.
 load(Prj):-
 	%atom_concat('c:/users/vll/vlad/LICENTA/licentavlad/factbse/',Prj,Result),
-	atom_concat('F:/serios/faculta/licenta/licentavlad/factbase/',Prj,Result),
+	atom_concat('./factbase/',Prj,Result),
 	consult(Result).
 
 
@@ -16,7 +16,9 @@ myClass(AllCls,Name) :-
 	fileS(Fid,Src,Path),
 	sourceFolderS(Src,Pid,_),
 	projectS(Pid,_,_,_,_),
-	not(commonClass(Path)).
+	findall(PartPath,common(Path,PartPath),Result),
+	count(Result,Nr),
+	Nr=0.
 
 common(Path,Nr):-commonClass(PartOfPath),
 	( atom_concat(Nr,PartOfPath,Path);
@@ -82,6 +84,15 @@ nrOfIf(MethodId,Nr):-findall(MethodId,ifT(_,_,MethodId,_,_,_),Result),
 nrOperators(IdMethod,Operator,Nr):-findall(IdMethod,operationT(_,_,IdMethod,_,Operator,_),Result),
 	count(Result,Nr).
 
+
+callDep(MethodId,CalledClassId,CalledMetId):-
+	callT(_,_,MethodId,_,Name,_,CalledMetId),
+	methodT(CalledMetId,CalledClassId,_,_,_,_,_),
+	myClass(CalledClassId,_),
+	writef(" : "),write(Name).
+
+isInterface(ClassId):-
+	interfaceT(ClassId).
 %+PUBLIC
 %remove all entrie from the database
 clearDatabase:-

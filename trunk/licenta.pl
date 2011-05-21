@@ -1,6 +1,8 @@
 %Structure of mathc : Id1, Name 1, Id2, name2
 :-dynamic match/4. % structure that stores the matching/copied classes.
 :-dynamic methodMatch/4. %structure that stores the matching/copied methods.
+:-dynamic partialMatch/2. % stores classes that match at meth and class level
+:-dynamic partialMetMatch/2.
 
 %----------------------help functions ---------------------------------%
 
@@ -17,20 +19,37 @@ delta(Nr1,Nr2,Delta):-(Nr1>=Nr2,Delta is Nr1-Nr2);
 procent(0,0,1.0):-!.
 procent(Nr1,Nr2,Procent):-(Nr1=<Nr2,Procent is Nr1/Nr2);
 		      (Nr2<Nr1, Procent is Nr2/Nr1).
+uniqueCalc([],List,List).
+uniqueCalc([Head|Tail],UList,Res):-
+	(
 
+	member(Head,UList),
+	uniqueCalc(Tail,UList,Res),!);
+	(
+	not(member(Head,UList)),
+	NewList= [Head|UList],
+	uniqueCalc(Tail,NewList,Res),!)
+	.
+uniqueList(List,ResultedList):-
+	uniqueCalc(List,[],ResultedList).
 
 %------------------- Main logic functions -----------------------------%
+test:-use_module('./IProject1.pl'),
+	use_module('./IProject2.pl'),
+
+	load1('webserver1.qlf'),
+	load2('webserver2.qlf')
+
+	.
 %ClassID1 - in param. The id of the class from the first prj
 %ClassID2 - in param. The id of the class from the second prj
 %return : true if classes match.
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
-run:- RootDir = 'F:/serios/faculta/licenta/licentavlad/',
-	atom_concat(RootDir,'IProject1.pl',Path1),
-	atom_concat(RootDir,'IProject2.pl',Path2),
-	use_module(Path1),
-	use_module(Path2),
+run:-
+	use_module('./IProject1.pl'),
+	use_module('./IProject2.pl'),
 
 %	load1('webserver1.qlf'),
 %	load2('webserver2.qlf'),
@@ -63,6 +82,7 @@ compare2Classes(Id1,Id2):-
 	compareMethodLevel(Id1,Id2).
 
 compareClassLevel(ClassID1,ClassID2):-
+	areInterfaces(ClassID1,ClassID2),
 	compareNrAtrib(ClassID1,ClassID2),
 	compareNrMet(ClassID1,ClassID2),
 	compareNrInterf(ClassID1,ClassID2),
@@ -73,17 +93,26 @@ compareClassLevel(ClassID1,ClassID2):-
 compareMethodLevel(ClassId1,ClassId2):-
 	findall(_,generateAllMatchingMethods(ClassId1,ClassId2),_),
 	findall(Id,methodMatch(Id,_,_,_),Result),
-	count(Result,Nr),
+	count(Result,NrOfMatches),
 	calcNrMet1(ClassId1,NrMet1),
 	calcNrMet2(ClassId2,NrMet2),
-	Mean is  ((NrMet1+NrMet2)/2),
-	%write(Result),
+
 	listing(methodMatch),
 	retractall(methodMatch(_,_,_,_)),
-	delta(Mean,Nr,Delta),
+
+
 	MaxNrOfUnmatchingMethods = 1,
-	Delta<MaxNrOfUnmatchingMethods,
-	writef("\nRetracted all \n").
+
+	delta(NrOfMatches,NrMet1,Delta1),
+	Delta1<MaxNrOfUnmatchingMethods,
+
+	delta(NrOfMatches,NrMet2,Delta2),
+	Delta2<MaxNrOfUnmatchingMethods,
+
+	MinProcent = 0.5,
+	procent(NrMet1,NrMet2,Procent),
+	Procent> MinProcent.
+
 
 generateAllMatchingMethods(ClassId1,ClassId2):-
 	methodsOfClass1(ClassId1,MethodId1,Name1),
@@ -91,7 +120,7 @@ generateAllMatchingMethods(ClassId1,ClassId2):-
 	not(methodMatch(MethodId1,_,_,_)),
     	not(methodMatch(_,_,MethodId2,_)),
 	methodMetrics(MethodId1,MethodId2),
-	callDependencies(MethodId1,MethodId2),
+ 	callDependencies(MethodId1,MethodId2),
 	assert(methodMatch(MethodId1,Name1,MethodId2,Name2)).
 
 
@@ -104,33 +133,60 @@ methodMetrics(MethodId1,MethodId2):-
 	.
 
 callDependencies(MethodId1,MethodId2):-
-	findall(MethodId1,callT1(MethodId1,_,_),ListMet1),
-	count(ListMet1,NrCalledMet1),
-	findall(MethodId2,callT2(MethodId2,_,_),ListMet2),
-	count(ListMet2,NrCalledMet2),
+	findall(CalledMet1,callT1(MethodId1,_,CalledMet1),ListMet1),
+	uniqueList(ListMet1,UniqueList1),
+	count(UniqueList1,NrCalledMet1),
+
+	findall(CalledMet2,callT2(MethodId2,_,CalledMet2),ListMet2),
+	uniqueList(ListMet2,UniqueList2),
+	count(UniqueList2,NrCalledMet2),
+
+%	writef("\nNr callT 1  : "),
+%	write(NrCalledMet1),
+%	writef("\nNr callT 2  : "),
+%	write(NrCalledMet2),
 
 	NrCalledMet1 = NrCalledMet2,
 
 	findall(MethodId1,compareAllCallT(MethodId1,MethodId2),MatchingCalls),
+
+%	listing(partialMatch),
+%	listing(partialMetMatch),
+
+	retractall(partialMatch),
+	retractall(partialMetMatch),
 	count(MatchingCalls,Nr),
 
-	writef("\nFor method Id : "),
-	write(MethodId1),
-	writef(" and Id2 "),
-	write(MethodId2),
-	writef(" Matching callT:   : "),
-	write(Nr),
+%	writef("\nFor method Id : "),
+%	write(MethodId1),
+%	writef(" and Id2 "),
+%	write(MethodId2),
+%	writef(" Matching callT:   : "),
+%	write(Nr),
 
-	MatchingCalls =  NrCalledMet1.
+	Nr =  NrCalledMet1.
 
 compareAllCallT(MethodId1,MethodId2):-
 	callT1(MethodId1,CalledClassId1,CalledMetId1),
 	callT2(MethodId2,ClassId2,CalledMetId2),
+	not(partialMatch(CalledClassId1,_)),
+    	not(partialMatch(_,ClassId2)),
+
 	compareClassLevel(CalledClassId1,ClassId2),
-	methodMetrics(CalledMetId1,CalledMetId2).
+	not(partialMetMatch(CalledMetId1,_)),
+	not(partialMetMatch(_,CalledMetId2)),
+	methodMetrics(CalledMetId1,CalledMetId2),
+	assert(partialMatch(CalledClassId1,ClassId2)),
+	assert(partialMetMatch(CalledMetId1,CalledMetId2)).
 
 % --------------------------------Filters--------------------------------%
 
+areInterfaces(ClassID1,ClassID2):-
+	(   isInterface1(ClassID1),
+	isInterface2(ClassID2));
+
+	(   not(isInterface1(ClassID1)),
+	    not(isInterface1(ClassID1))).
 
 %ClassID1 - in param. The id of the class from the first prj
 %ClassID2 - in param. The id of the class from the second prj
