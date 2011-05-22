@@ -51,11 +51,13 @@ run:-
 	use_module('./IProject1.pl'),
 	use_module('./IProject2.pl'),
 
-	load1('webserver1.qlf'),
-	load2('webserver2.qlf'),
+%	load1('webserver1.qlf'),
+%	load2('webserver2.qlf'),
 
-%	load1('passc2Copy.qlf'),
+	load1('passc2Copy.qlf'),
 %	load2('passc2.qlf'),
+	load2('newtema2.qlf'),
+
 	findall(Name1-Name2,generateAllMatchingClasses(Name1,Name2),Result),
 	listing(match),
 	count(Result,Nr),
@@ -79,24 +81,14 @@ generateAllMatchingClasses(Name1,Name2):-
 
 compare2Classes(Id1,Id2):-
 	compareClassLevel(Id1,Id2),
-	compareMethodLevel(Id1,Id2),
-	writef("\n Class MATCH!!!\n"),
-	write(Id1 - Id2)
-	.
+	compareMethodLevel(Id1,Id2).
 
 compareClassLevel(ClassID1,ClassID2):-
-%	writef("\n TRY To matching \n"),
-%	write(ClassID1),writef("  "), write(ClassID2),writef("\n"),
-
 	areInterfaces(ClassID1,ClassID2),
 	compareNrAtrib(ClassID1,ClassID2),
 	compareNrMet(ClassID1,ClassID2),
 	compareNrInterf(ClassID1,ClassID2),
-	compareNrSuperClass(ClassID1,ClassID2)
-%	,writef("\n are matching \n"),
-%	write(ClassID1),writef("  "), write(ClassID2),writef("\n")
-
-	.
+	compareNrSuperClass(ClassID1,ClassID2).
 
 %match the methods from a class with the ones from the second class.
 compareMethodLevel(ClassId1,ClassId2):-
@@ -106,7 +98,7 @@ compareMethodLevel(ClassId1,ClassId2):-
 	calcNrMet1(ClassId1,NrMet1),
 	calcNrMet2(ClassId2,NrMet2),
 
-	listing(methodMatch),
+%	listing(methodMatch),
 	retractall(methodMatch(_,_,_,_)),
 
 
@@ -130,34 +122,16 @@ generateAllMatchingMethods(ClassId1,ClassId2):-
     	not(methodMatch(_,_,MethodId2,_)),
 	methodMetrics(MethodId1,MethodId2),
 
-	writef("\n will be compare from class :"),
-	write(ClassId1),
-	writef(" and" ),
-	write(ClassId2),
-	writef(" mothod "),
-	write(Name1),
-	writef(" and "),
-	write(Name2),
-	writef("\n"),
 	callDependencies(MethodId1,MethodId2),
-	writef("\nSUCCESS!!\n\n"),
 	assert(methodMatch(MethodId1,Name1,MethodId2,Name2)).
 
 
 
 %the methics that are applied to check if methods match.
 methodMetrics(MethodId1,MethodId2):-
-	writef("\n TRY To match \n"),
-	write(MethodId1),writef("  "), write(MethodId2),writef("\n"),
-
 	whileFilter(MethodId1,MethodId2),
 	ifFilter(MethodId1,MethodId2),
-	operatorsFilter(MethodId1,MethodId2)
-
-	,writef("\n MATCHED : "),
-	write(MethodId1),writef("  "), write(MethodId2),writef("\n")
-
-	.
+	operatorsFilter(MethodId1,MethodId2).
 
 callDependencies(MethodId1,MethodId2):-
 	findall(CalledMet1,callT1(MethodId1,_,CalledMet1),ListMet1),
@@ -169,32 +143,16 @@ callDependencies(MethodId1,MethodId2):-
 	uniqueList(ListMet2,UniqueList2),
 	count(UniqueList2,NrCalledMet2),
 
-
 	NrCalledMet1 = NrCalledMet2,
 
 	findall(MethodId1,compareAllCallT(MethodId1,MethodId2),MatchingCalls),
 	count(MatchingCalls,Nr),
 
-	listing(partialMatch),
-	listing(partialMetMatch),
-
-	writef("\nNr callT 1  : "),
-	write(NrCalledMet1),
-	writef("\nNr callT 2  : "),
-	write(NrCalledMet2),
-	writef("\nNr match  : "),
-	write(Nr),
+%	listing(partialMatch),
+%	listing(partialMetMatch),
 
 	retractall(partialMatch(_,_)),
 	retractall(partialMetMatch(_,_)),
-
-
-%	writef("\nFor method Id : "),
-%	write(MethodId1),
-%	writef(" and Id2 "),
-%	write(MethodId2),
-%	writef(" Matching callT:   : "),
-%	write(Nr),
 
 	Nr =  NrCalledMet1.
 
@@ -203,7 +161,7 @@ compareAllCallT(MethodId1,MethodId2):-
 	callT2(MethodId2,ClassId2,CalledMetId2),
 	not(partialMetMatch(CalledMetId1,_)),
 	not(partialMetMatch(_,CalledMetId2)),
-	writef("\nFr AllCallT:" ), write(CalledMetId1 -CalledMetId2),writef("\n\n"),
+
 	methodMetrics(CalledMetId1,CalledMetId2),
 	(   (
 
@@ -227,7 +185,7 @@ areInterfaces(ClassID1,ClassID2):-
 	isInterface2(ClassID2));
 
 	(   not(isInterface1(ClassID1)),
-	    not(isInterface1(ClassID1))).
+	    not(isInterface2(ClassID2))).
 
 %ClassID1 - in param. The id of the class from the first prj
 %ClassID2 - in param. The id of the class from the second prj
@@ -278,16 +236,7 @@ compareNrSuperClass(ClassID1,ClassID2):-
 	calcNrExtends1(ClassID1,Nr1),
 	calcNrExtends2(ClassID2,Nr2),
 
-	Nr1 = Nr2
-%	write(ClassID1),
-%	writef(" Nr1  : "),
-%	write(Nr1),
-%	writef("\n"),
-%	write(ClassID2),
-%	writef("Nr2  : "),
-%	write(Nr2),
-%	writef("\n ")
-	.
+	Nr1 = Nr2.
 
 
 %method level comparing. Nr of -, / ,* should be equal between
@@ -303,18 +252,7 @@ operatorsFilter(MethodId1,MethodId2):-
 
 	nrOperators1(MethodId1,*,NrMul1),
 	nrOperators2(MethodId2,*,NrMul2),
-	NrMul1=NrMul2
-
-%	write(MethodId1),
-%	writef(" Nr1  : "),
-%	write(Nr1),
-%	writef("\n"),
-%	write(MethodId2),
-%	writef("Nr2  : "),
-%	write(Nr2),
-%	writef("\n ")
-
-	.
+	NrMul1=NrMul2.
 
 ifFilter(MethodId1,MethodId2):-
 	nrOfIf1(MethodId1,Nr1),
@@ -329,16 +267,6 @@ ifFilter(MethodId1,MethodId2):-
 whileFilter(MethodId1,MethodId2):-
 	nrOfCycles1(MethodId1,Nr1),
 	nrOfCycles2(MethodId2,Nr2),
-
-%	write(MethodId1),
-%	writef(" Nr1  : "),
-%	write(Nr1),
-%	writef("\n"),
-%	write(MethodId2),
-%	writef("Nr2  : "),
-%	write(Nr2),
-%	writef("\n "),
-
 	Nr1=Nr2.
 
 

@@ -87,11 +87,9 @@ nrOperators(IdMethod,Operator,Nr):-findall(IdMethod,operationT(_,_,IdMethod,_,Op
 %+PUBLIC
 %returnes all the calles that are made from a method
 callDep(MethodId,CalledClassId,CalledMetId):-
-	callT(_,_,MethodId,_,Name,_,CalledMetId),
-%	callT(_,_,MethodId,_,_,_,CalledMetId),
+	callT(_,_,MethodId,_,_,_,CalledMetId),
 	methodT(CalledMetId,CalledClassId,_,_,_,_,_),
-	myClass(CalledClassId,_),
-	writef(" : "),write(Name).
+	myClass(CalledClassId,_).
 
 %+PUBLIC
 %returnes true if class is an interface.
@@ -118,3 +116,14 @@ clearDatabase:-
         retractall(globalIds(_,_,_)),
         retractall(ri_globalIds(_,_,_)),
 	retractall(paramT(_,_,_,_)).
+
+
+
+
+
+
+
+
+
+
+
