@@ -88,6 +88,7 @@ nrOperators(IdMethod,Operator,Nr):-findall(IdMethod,operationT(_,_,IdMethod,_,Op
 %returnes all the calles that are made from a method
 callDep(MethodId,CalledClassId,CalledMetId):-
 	callT(_,_,MethodId,_,Name,_,CalledMetId),
+%	callT(_,_,MethodId,_,_,_,CalledMetId),
 	methodT(CalledMetId,CalledClassId,_,_,_,_,_),
 	myClass(CalledClassId,_),
 	writef(" : "),write(Name).

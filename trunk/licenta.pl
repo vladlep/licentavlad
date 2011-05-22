@@ -51,11 +51,11 @@ run:-
 	use_module('./IProject1.pl'),
 	use_module('./IProject2.pl'),
 
-%	load1('webserver1.qlf'),
-%	load2('webserver2.qlf'),
+	load1('webserver1.qlf'),
+	load2('webserver2.qlf'),
 
-	load1('passc2Copy.qlf'),
-	load2('passc2.qlf'),
+%	load1('passc2Copy.qlf'),
+%	load2('passc2.qlf'),
 	findall(Name1-Name2,generateAllMatchingClasses(Name1,Name2),Result),
 	listing(match),
 	count(Result,Nr),
@@ -79,14 +79,23 @@ generateAllMatchingClasses(Name1,Name2):-
 
 compare2Classes(Id1,Id2):-
 	compareClassLevel(Id1,Id2),
-	compareMethodLevel(Id1,Id2).
+	compareMethodLevel(Id1,Id2),
+	writef("\n Class MATCH!!!\n"),
+	write(Id1 - Id2)
+	.
 
 compareClassLevel(ClassID1,ClassID2):-
+%	writef("\n TRY To matching \n"),
+%	write(ClassID1),writef("  "), write(ClassID2),writef("\n"),
+
 	areInterfaces(ClassID1,ClassID2),
 	compareNrAtrib(ClassID1,ClassID2),
 	compareNrMet(ClassID1,ClassID2),
 	compareNrInterf(ClassID1,ClassID2),
 	compareNrSuperClass(ClassID1,ClassID2)
+%	,writef("\n are matching \n"),
+%	write(ClassID1),writef("  "), write(ClassID2),writef("\n")
+
 	.
 
 %match the methods from a class with the ones from the second class.
@@ -120,19 +129,38 @@ generateAllMatchingMethods(ClassId1,ClassId2):-
 	not(methodMatch(MethodId1,_,_,_)),
     	not(methodMatch(_,_,MethodId2,_)),
 	methodMetrics(MethodId1,MethodId2),
- 	callDependencies(MethodId1,MethodId2),
+
+	writef("\n will be compare from class :"),
+	write(ClassId1),
+	writef(" and" ),
+	write(ClassId2),
+	writef(" mothod "),
+	write(Name1),
+	writef(" and "),
+	write(Name2),
+	writef("\n"),
+	callDependencies(MethodId1,MethodId2),
+	writef("\nSUCCESS!!\n\n"),
 	assert(methodMatch(MethodId1,Name1,MethodId2,Name2)).
 
 
 
 %the methics that are applied to check if methods match.
 methodMetrics(MethodId1,MethodId2):-
+	writef("\n TRY To match \n"),
+	write(MethodId1),writef("  "), write(MethodId2),writef("\n"),
+
 	whileFilter(MethodId1,MethodId2),
 	ifFilter(MethodId1,MethodId2),
 	operatorsFilter(MethodId1,MethodId2)
+
+	,writef("\n MATCHED : "),
+	write(MethodId1),writef("  "), write(MethodId2),writef("\n")
+
 	.
 
 callDependencies(MethodId1,MethodId2):-
+	findall(CalledMet1,callT1(MethodId1,_,CalledMet1),ListMet1),
 	findall(CalledMet1,callT1(MethodId1,_,CalledMet1),ListMet1),
 	uniqueList(ListMet1,UniqueList1),
 	count(UniqueList1,NrCalledMet1),
@@ -141,21 +169,25 @@ callDependencies(MethodId1,MethodId2):-
 	uniqueList(ListMet2,UniqueList2),
 	count(UniqueList2,NrCalledMet2),
 
-%	writef("\nNr callT 1  : "),
-%	write(NrCalledMet1),
-%	writef("\nNr callT 2  : "),
-%	write(NrCalledMet2),
 
 	NrCalledMet1 = NrCalledMet2,
 
 	findall(MethodId1,compareAllCallT(MethodId1,MethodId2),MatchingCalls),
-
-%	listing(partialMatch),
-%	listing(partialMetMatch),
-
-	retractall(partialMatch),
-	retractall(partialMetMatch),
 	count(MatchingCalls,Nr),
+
+	listing(partialMatch),
+	listing(partialMetMatch),
+
+	writef("\nNr callT 1  : "),
+	write(NrCalledMet1),
+	writef("\nNr callT 2  : "),
+	write(NrCalledMet2),
+	writef("\nNr match  : "),
+	write(Nr),
+
+	retractall(partialMatch(_,_)),
+	retractall(partialMetMatch(_,_)),
+
 
 %	writef("\nFor method Id : "),
 %	write(MethodId1),
@@ -169,15 +201,24 @@ callDependencies(MethodId1,MethodId2):-
 compareAllCallT(MethodId1,MethodId2):-
 	callT1(MethodId1,CalledClassId1,CalledMetId1),
 	callT2(MethodId2,ClassId2,CalledMetId2),
+	not(partialMetMatch(CalledMetId1,_)),
+	not(partialMetMatch(_,CalledMetId2)),
+	writef("\nFr AllCallT:" ), write(CalledMetId1 -CalledMetId2),writef("\n\n"),
+	methodMetrics(CalledMetId1,CalledMetId2),
+	(   (
+
 	not(partialMatch(CalledClassId1,_)),
     	not(partialMatch(_,ClassId2)),
 
 	compareClassLevel(CalledClassId1,ClassId2),
-	not(partialMetMatch(CalledMetId1,_)),
-	not(partialMetMatch(_,CalledMetId2)),
-	methodMetrics(CalledMetId1,CalledMetId2),
-	assert(partialMatch(CalledClassId1,ClassId2)),
-	assert(partialMetMatch(CalledMetId1,CalledMetId2)).
+	assert(partialMetMatch(CalledMetId1,CalledMetId2)),
+	assert(partialMatch(CalledClassId1,ClassId2))
+	    );
+	(
+	partialMatch(CalledClassId1,ClassId2),
+	not(partialMetMatch(CalledMetId1,CalledMetId2)),
+	 assert(partialMetMatch(CalledMetId1,CalledMetId2)) )
+).
 
 % --------------------------------Filters--------------------------------%
 
