@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+
+<project name="Bomberman" default="createStubGeneratiorJar" basedir=".">
+
+	<property name="src" value="./src/"/>
+	<property name="build" value="./bin/"/>
+	<property name="jars" value="./jars/"/>
+
+    <target name="init">
+         <mkdir dir="${build}"/>
+         <mkdir dir="${jars}"/>         	
+    </target>  
+         	
+	<target name="compile" depends="init">	  
+		<javac srcdir="${src}" destdir="${build}"/>
+	</target>
+
+	<target name="createNamingServiceJar" depends="init">	  
+		<jar destfile="${jars}/NamingService.jar" basedir="${build}" includes="Registry/*">
+			<include name="Commons/Address.class"/>
+			<include name="RequestReply/ByteStreamTransformer.class" />
+			<include name="RequestReply/Replyer.class" />
+			<include name="Marshaller/FunctionCallMarshaller.class" />
+			<include name="Marshaller/ResultMarshaller.class" />
+			<include name="Marshaller/FunctionCall.class" />
+			<manifest>
+				<attribute name="Main-Class" value="Registry.NamingService" />
+			</manifest>
+		</jar>
+	</target>
+	
+	<target name="createStubGeneratiorJar" depends="init">	  
+		<copy file="utils/skeletonFunctionality" todir="${jars}"></copy>
+		<jar destfile="${jars}/ProxiesGenerator.jar" basedir="${build}">
+			<include name="ProxiesGenerator.class"/>
+			<include name="utils/skeletonFunctionality"/>
+			<manifest>
+				<attribute name="Main-Class" value="ProxiesGenerator"/>
+			</manifest>
+		</jar>
+	</target>
+	<target name="createServerJar" depends="init">	  
+			<mkdir dir="${build}"/>
+			<jar destfile="${jars}/ServersRegistration.jar" basedir="${build}">
+				<manifest>
+					<attribute name="Main-Class" value="StockMarketExample.ServerStockMarketComplex"/>
+				</manifest>
+			</jar>
+		</target>
+	
+</project>
