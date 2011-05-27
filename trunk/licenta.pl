@@ -3,7 +3,7 @@
 :-dynamic methodMatch/4. %structure that stores the matching/copied methods.
 :-dynamic partialMatch/2. % stores classes that match at meth and class level
 :-dynamic partialMetMatch/2.
-
+:-dynamic projectMatch/2.
 %----------------------help functions ---------------------------------%
 
 %return the number of elements form a list. The result is attached to
@@ -34,35 +34,58 @@ uniqueList(List,ResultedList):-
 	uniqueCalc(List,[],ResultedList).
 
 %------------------- Main logic functions -----------------------------%
-test:-use_module('./IProject1.pl'),
-	use_module('./IProject2.pl'),
 
-	load1('webserver1.qlf'),
-	load2('webserver2.qlf')
-
-	.
 %ClassID1 - in param. The id of the class from the first prj
 %ClassID2 - in param. The id of the class from the second prj
 %return : true if classes match.
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
-run:-
+runAll:-findall(_,runFromDir,_),
+	listing(projectMatch).
+
+runFromDir:-directory_files("./factbase",List),
+	combine2(List,Proj1,Proj2),
+	run(Proj1,Proj2).
+
+qlfExtension(Name):-file_name_extension(_, ".qlf", Name).
+
+combine2(List,Proj1,Proj2):-
+	member(Proj1,List),
+	qlfExtension(Proj1),
+	member(Proj2,List),
+	qlfExtension(Proj2),
+
+	nth1(Index1,List,Proj1),
+	nth1(Index2,List,Proj2),
+	Index1 <Index2.
+
+run(Proj1,Proj2):-
 	use_module('./IProject1.pl'),
 	use_module('./IProject2.pl'),
+	load1(Proj1),
+	load2(Proj2),
+	write(Proj1 - Proj2),
+	writef("\n"),
 
 %	load1('webserver1.qlf'),
 %	load2('webserver2.qlf'),
 
-	load1('passc2Copy.qlf'),
+%	load1('passc2Copy.qlf'),
 %	load2('passc2.qlf'),
-	load2('newtema2.qlf'),
+%	load2('newtema2.qlf'),
 
 	findall(Name1-Name2,generateAllMatchingClasses(Name1,Name2),Result),
 	listing(match),
 	count(Result,Nr),
+	writef("\nMatching classes\n"),
 	write(Nr),
-	retractall(match(_,_,_,_)).
+	retractall(match(_,_,_,_)),
+	clearDatabase1,
+	clearDatabase2,
+
+	Nr > 1,
+	assert(projectMatch(Proj1,Proj2)).
 
 
 %generates combination of classes and compares them.
