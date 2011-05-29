@@ -4,6 +4,7 @@
 :-dynamic partialMatch/2. % stores classes that match at meth and class level
 :-dynamic partialMetMatch/2.
 :-dynamic projectMatch/2.
+:-dynamic signMatch/2.
 %----------------------help functions ---------------------------------%
 
 %return the number of elements form a list. The result is attached to
@@ -19,6 +20,7 @@ delta(Nr1,Nr2,Delta):-(Nr1>=Nr2,Delta is Nr1-Nr2);
 procent(0,0,1.0):-!.
 procent(Nr1,Nr2,Procent):-(Nr1=<Nr2,Procent is Nr1/Nr2);
 		      (Nr2<Nr1, Procent is Nr2/Nr1).
+%calculate the list with unique values from a given list.
 uniqueCalc([],List,List).
 uniqueCalc([Head|Tail],UList,Res):-
 	(
@@ -61,6 +63,7 @@ combine2(List,Proj1,Proj2):-
 	Index1 <Index2.
 
 run(Proj1,Proj2):-
+%	consult('./properties.pl'),
 	use_module('./IProject1.pl'),
 	use_module('./IProject2.pl'),
 	load1(Proj1),
@@ -145,6 +148,8 @@ generateAllMatchingMethods(ClassId1,ClassId2):-
     	not(methodMatch(_,_,MethodId2,_)),
 	methodMetrics(MethodId1,MethodId2),
 
+
+
 	callDependencies(MethodId1,MethodId2),
 	assert(methodMatch(MethodId1,Name1,MethodId2,Name2)).
 
@@ -153,8 +158,11 @@ generateAllMatchingMethods(ClassId1,ClassId2):-
 %the methics that are applied to check if methods match.
 methodMetrics(MethodId1,MethodId2):-
 	whileFilter(MethodId1,MethodId2),
+	operatorsFilter(MethodId1,MethodId2),
 	ifFilter(MethodId1,MethodId2),
-	operatorsFilter(MethodId1,MethodId2).
+	areStatic(MethodId1,MethodId2),
+	compareSigniture(MethodId1,MethodId2)
+	.
 
 callDependencies(MethodId1,MethodId2):-
 	findall(CalledMet1,callT1(MethodId1,_,CalledMet1),ListMet1),
@@ -200,6 +208,45 @@ compareAllCallT(MethodId1,MethodId2):-
 	not(partialMetMatch(CalledMetId1,CalledMetId2)),
 	 assert(partialMetMatch(CalledMetId1,CalledMetId2)) )
 ).
+
+
+compareSigniture(MethodId1,MethodId2):-
+	paramMet1(MethodId1,ListParam1),
+	paramMet2(MethodId2,ListParam2),
+	count(ListParam1,NrParam1),
+	count(ListParam2,NrParam2),
+
+	NrParam1 = NrParam2,
+
+	writef("\nFor method "),
+	write(MethodId1),
+	writef(" there are nr param : "),
+	write(NrParam1),
+
+	findall(_,paramCompare(MethodId1,MethodId2),_),
+	findall(Id,signMatch(Id,_),ResultList),
+	count(ResultList,NrMatch),
+	write(ResultList),
+	listing(signMatch),
+	retractall(signMatch(_,_)),
+
+	writef(" and there are nr match : "),
+	write(NrMatch),
+	NrMatch = NrParam1
+
+	,write(NrParam1)
+
+	.
+
+paramCompare(MethodId1,MethodId2):-
+	param1(MethodId1,ClsId1,IdParam1),
+	param2(MethodId2,ClsId2,IdParam2),
+	not(signMatch(IdParam1,_)),
+    	not(signMatch(_,IdParam2)),
+	compareClassLevel(ClsId1,ClsId2),
+	assert(signMatch(IdParam1,IdParam2)).
+
+
 
 % --------------------------------Filters--------------------------------%
 
@@ -275,7 +322,13 @@ operatorsFilter(MethodId1,MethodId2):-
 
 	nrOperators1(MethodId1,*,NrMul1),
 	nrOperators2(MethodId2,*,NrMul2),
-	NrMul1=NrMul2.
+	NrMul1=NrMul2
+
+%	,nrOperators1(MethodId1,&&,NrAnd),
+%	nrOperators2(MethodId2,&&,NrAnd),
+%	NrMul1=NrMul2
+%
+	.
 
 ifFilter(MethodId1,MethodId2):-
 	nrOfIf1(MethodId1,Nr1),
@@ -294,5 +347,11 @@ whileFilter(MethodId1,MethodId2):-
 
 
 
+areStatic(MetId1,MetId2):-
+		(   isStatic1(MetId1),
+	isStatic2(MetId2));
+
+	(   not(isStatic1(MetId1)),
+	    not(isStatic2(MetId2))).
 
 
