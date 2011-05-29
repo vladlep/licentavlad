@@ -1,6 +1,7 @@
 :-module(mod2,[myClass2/2,load2/1,calcNrAtrib2/2,clearDatabase2/0,calcNrMet2/2,
 	       calcNrInterf2/2,calcNrExtends2/2,methodsOfClass2/3,nrOfCycles2/2,
-	       nrOfIf2/2, nrOperators2/3,callT2/3,isInterface2/1]).
+	       nrOfIf2/2, nrOperators2/3,callT2/3,isInterface2/1,isStatic2/1,
+	      paramMet2/2,param2/3]).
 :-include('./utilities.pl').
 :-include('./commonClasses.pl').
 load2(Prj):-
@@ -31,6 +32,14 @@ callT2(MethodId2,CalledClassId2,CalledMetId2):-
 	callDep(MethodId2,CalledClassId2,CalledMetId2).
 
 isInterface2(ClassId):-isInterface(ClassId).
+
+isStatic2(MetId):-isStatic(MetId).
+
+paramMet2(MethodId2,ListParam2):-paramMet(MethodId2,ListParam2).
+
+param2(MethodId2,ClsId2,IdParam2):-param(MethodId2,ClsId2,IdParam2).
+
+
 
 clearDatabase2:-clearDatabase.
 

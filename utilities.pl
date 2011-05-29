@@ -95,6 +95,27 @@ callDep(MethodId,CalledClassId,CalledMetId):-
 %returnes true if class is an interface.
 isInterface(ClassId):-
 	interfaceT(ClassId).
+
+%+PUBLIC
+%returnes true if method is static.
+isStatic(MetId):-
+	modifierT(MetId,static).
+paramMet(MethodId,ListParam):-
+	methodT(MethodId,_,_,ListParam,_,_,_).
+
+
+param(MethodId,ClsId,IdParam):-
+	paramT(IdParam,MethodId,IdTypeRef,_),
+	typeRefT(IdTypeRef,IdParam,MethodId,ClsId)
+	.
+
+param(MethodId,ClsId,IdParam):-
+	paramT(IdParam,MethodId,ArrayId,_),
+	arrayTypeT(ArrayId,IdParam,IdTypeRef,_),
+	typeRefT(IdTypeRef,ArrayId,MethodId,ClsId)
+	.
+
+
 %+PUBLIC
 %remove all entrie from the database
 clearDatabase:-
@@ -116,7 +137,6 @@ clearDatabase:-
         retractall(globalIds(_,_,_)),
         retractall(ri_globalIds(_,_,_)),
 	retractall(paramT(_,_,_,_)).
-
 
 
 
