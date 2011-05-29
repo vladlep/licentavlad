@@ -218,24 +218,12 @@ compareSigniture(MethodId1,MethodId2):-
 
 	NrParam1 = NrParam2,
 
-	writef("\nFor method "),
-	write(MethodId1),
-	writef(" there are nr param : "),
-	write(NrParam1),
-
 	findall(_,paramCompare(MethodId1,MethodId2),_),
 	findall(Id,signMatch(Id,_),ResultList),
 	count(ResultList,NrMatch),
-	write(ResultList),
-	listing(signMatch),
 	retractall(signMatch(_,_)),
 
-	writef(" and there are nr match : "),
-	write(NrMatch),
 	NrMatch = NrParam1
-
-	,write(NrParam1)
-
 	.
 
 paramCompare(MethodId1,MethodId2):-
