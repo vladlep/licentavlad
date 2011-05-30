@@ -1,6 +1,6 @@
 %Structure of mathc : Id1, Name 1, Id2, name2
-:-dynamic match/4. % structure that stores the matching/copied classes.
-:-dynamic methodMatch/4. %structure that stores the matching/copied methods.
+:-dynamic match/5. % structure that stores the matching/copied classes.
+:-dynamic methodMatch/5. %structure that stores the matching/copied methods.
 :-dynamic partialMatch/2. % stores classes that match at meth and class level
 :-dynamic partialMetMatch/2.
 :-dynamic projectMatch/2.
@@ -18,7 +18,7 @@ delta(Nr1,Nr2,Delta):-(Nr1>=Nr2,Delta is Nr1-Nr2);
 
 %returns the percent between Nr1 and Nr2. intre 0 si 1.
 procent(0,0,1.0):-!.
-procent(Nr1,Nr2,Procent):-(Nr1=<Nr2,Procent is Nr1/Nr2);
+procent(Nr1,Nr2,Procent):-(Nr1=<Nr2,Procent is Nr1/Nr2,!);
 		      (Nr2<Nr1, Procent is Nr2/Nr1).
 %calculate the list with unique values from a given list.
 uniqueCalc([],List,List).
@@ -83,7 +83,7 @@ run(Proj1,Proj2):-
 	count(Result,Nr),
 	writef("\nMatching classes\n"),
 	write(Nr),
-	retractall(match(_,_,_,_)),
+	retractall(match(_,_,_,_,_)),
 	clearDatabase1,
 	clearDatabase2,
 
@@ -98,16 +98,34 @@ generateAllMatchingClasses(Name1,Name2):-
 
 	myClass1(Id1,Name1),
 	myClass2(Id2,Name2),
-	not(match(Id1,_,_,_)),
-	not(match(_,_,Id2,_)),
-	compare2Classes(Id1,Id2),
-	assert(match(Id1,Name1,Id2,Name2)).
+
+	%if one of them already as a very probable match -> don't try anymore
+	not(match(Id1,_,_,_,high)),
+	not(match(_,_,Id2,_,high)),
+	compare2Classes(Id1,Name1,Id2,Name2),
+
+	%assert that there is a big chance they are matches
+	retractall(match(Id1,_,_,_,_)),
+	retractall(match(_,_,Id2,_,_)),
+	assert(match(Id1,Name1,Id2,Name2,high)).
 
 
+assertClassMatch(Id1,Name1,Id2,Name2):-
+	(
+	not(match(Id1,_,_,_,medium)),
+	not(match(_,_,Id2,_,medium)),
+	not(match(Id1,_,_,_,low)),
+	not(match(_,_,Id2,_,low)),
+	assert(match(Id1,Name1,Id2,Name2,low)),!
+	) ;1=1
 
-compare2Classes(Id1,Id2):-
+	.
+compare2Classes(Id1,Name1,Id2,Name2):-
 	compareClassLevel(Id1,Id2),
-	compareMethodLevel(Id1,Id2).
+
+	assertClassMatch(Id1,Name1,Id2,Name2),
+
+	compareMethodLevel(Id1,Name1,Id2,Name2) .
 
 compareClassLevel(ClassID1,ClassID2):-
 	areInterfaces(ClassID1,ClassID2),
@@ -115,17 +133,27 @@ compareClassLevel(ClassID1,ClassID2):-
 	compareNrMet(ClassID1,ClassID2),
 	compareNrInterf(ClassID1,ClassID2),
 	compareNrSuperClass(ClassID1,ClassID2).
-
+test2(A):-A = 2+3.
 %match the methods from a class with the ones from the second class.
-compareMethodLevel(ClassId1,ClassId2):-
+compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 	findall(_,generateAllMatchingMethods(ClassId1,ClassId2),_),
-	findall(Id,methodMatch(Id,_,_,_),Result),
-	count(Result,NrOfMatches),
+	findall(Id,methodMatch(Id,_,_,_,high),ResultHigh),
+	count(ResultHigh,NrOfMatchesHigh),
+
+	findall(Id,methodMatch(Id,_,_,_,low),ResultLow),
+	count(ResultLow,NrOfMatchesLow),
+
+	writef("\n For classes "),
+	write(ClassId1 - ClassId2),
+	writef("there are nr of matches low - high"),
+	write(NrOfMatchesLow - NrOfMatchesHigh ),
+
+	NrOfMatches is NrOfMatchesHigh + NrOfMatchesLow,
+
 	calcNrMet1(ClassId1,NrMet1),
 	calcNrMet2(ClassId2,NrMet2),
-
 %	listing(methodMatch),
-	retractall(methodMatch(_,_,_,_)),
+	retractall(methodMatch(_,_,_,_,_)),
 
 
 	MaxNrOfUnmatchingMethods = 1,
@@ -138,20 +166,44 @@ compareMethodLevel(ClassId1,ClassId2):-
 
 	MinProcent = 0.5,
 	procent(NrMet1,NrMet2,Procent),
-	Procent> MinProcent.
+	Procent> MinProcent,
 
+	%daca a trecut de compararile astea =>clasa e mediu
+
+	procent(NrOfMatchesHigh,NrOfMatches,ProcentMatchHigh),
+	not(
+	    assertClassMedium(ClassId1,Name1,ClassId2,Name2,ProcentMatchHigh)
+	   )
+	.
+assertClassMedium(ClassId1,Name1,ClassId2,Name2,ProcentMatchHigh):-
+	ProcentMatchHigh < 0.5, % nu e high, ramane mediu
+	retractall(match(ClassId1,_,_,_,_)),
+	retractall(match(_,_,ClassId2,_,_)),
+	assert(match(ClassId1,Name1,ClassId2,Name2,medium))
+	.
+
+test(R):- ((member(A,R), A = 1, writef("\n caz1"),!); 1=1),
+	writef("\nWe are here \n")
+	.
+assertMetMatch(MethodId1,Name1,MethodId2,Name2):-
+	(not(methodMatch(MethodId1,_,_,_,low)),
+    	not(methodMatch(_,_,MethodId2,_,low)),
+	assert(methodMatch(MethodId1,Name1,MethodId2,Name2,low)),!
+	); 1 = 1.
 
 generateAllMatchingMethods(ClassId1,ClassId2):-
 	methodsOfClass1(ClassId1,MethodId1,Name1),
 	methodsOfClass2(ClassId2,MethodId2,Name2),
-	not(methodMatch(MethodId1,_,_,_)),
-    	not(methodMatch(_,_,MethodId2,_)),
+	not(methodMatch(MethodId1,_,_,_,high)),
+    	not(methodMatch(_,_,MethodId2,_,high)),
+
 	methodMetrics(MethodId1,MethodId2),
-
-
+	assertMetMatch(MethodId1,Name1,MethodId2,Name2),
 
 	callDependencies(MethodId1,MethodId2),
-	assert(methodMatch(MethodId1,Name1,MethodId2,Name2)).
+	retractall(methodMatch(MethodId1,_,_,_,low)),
+    	retractall(methodMatch(_,_,MethodId2,_,low)),
+	assert(methodMatch(MethodId1,Name1,MethodId2,Name2,high)).
 
 
 
