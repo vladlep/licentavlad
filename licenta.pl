@@ -43,10 +43,10 @@ uniqueList(List,ResultedList):-
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
-runAll:-findall(_,runFromDir,_),
+runAll:-findall(_,runFromDir("./factbase"),_),
 	listing(projectMatch).
 
-runFromDir:-directory_files("./factbase",List),
+runFromDir(Directory):-directory_files(Directory,List),
 	combine2(List,Proj1,Proj2),
 	run(Proj1,Proj2).
 
