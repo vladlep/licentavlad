@@ -84,8 +84,8 @@ run(Proj1,Proj2):-
 	writef("\nMatching classes\n"),
 	write(Nr),
 	retractall(match(_,_,_,_,_)),
-	clearDatabase1,
-	clearDatabase2,
+%	clearDatabase1,
+%	clearDatabase2,
 
 	Nr > 1,
 	assert(projectMatch(Proj1,Proj2)).
@@ -133,8 +133,8 @@ compareClassLevel(ClassID1,ClassID2):-
 	compareNrMet(ClassID1,ClassID2),
 	compareNrInterf(ClassID1,ClassID2),
 	compareNrSuperClass(ClassID1,ClassID2).
-test2(A):-A = 2+3.
-%match the methods from a class with the ones from the second class.
+
+	%match the methods from a class with the ones from the second class.
 compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 	findall(_,generateAllMatchingMethods(ClassId1,ClassId2),_),
 	findall(Id,methodMatch(Id,_,_,_,high),ResultHigh),
@@ -142,11 +142,6 @@ compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 
 	findall(Id,methodMatch(Id,_,_,_,low),ResultLow),
 	count(ResultLow,NrOfMatchesLow),
-
-	writef("\n For classes "),
-	write(ClassId1 - ClassId2),
-	writef("there are nr of matches low - high"),
-	write(NrOfMatchesLow - NrOfMatchesHigh ),
 
 	NrOfMatches is NrOfMatchesHigh + NrOfMatchesLow,
 
@@ -182,9 +177,6 @@ assertClassMedium(ClassId1,Name1,ClassId2,Name2,ProcentMatchHigh):-
 	assert(match(ClassId1,Name1,ClassId2,Name2,medium))
 	.
 
-test(R):- ((member(A,R), A = 1, writef("\n caz1"),!); 1=1),
-	writef("\nWe are here \n")
-	.
 assertMetMatch(MethodId1,Name1,MethodId2,Name2):-
 	(not(methodMatch(MethodId1,_,_,_,low)),
     	not(methodMatch(_,_,MethodId2,_,low)),
