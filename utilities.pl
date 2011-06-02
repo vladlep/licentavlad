@@ -20,9 +20,9 @@ myClass(AllCls,Name) :-
 	count(Result,Nr),
 	Nr=0.
 
-common(Path,Nr):-commonClass(PartOfPath),
-	( atom_concat(Nr,PartOfPath,Path);
- 	  atom_concat(PartOfPath,Nr,Path) ).
+common(Path,PartPath):-commonClass(PartOfPath),
+	( atom_concat(PartPath,PartOfPath,Path);
+ 	  atom_concat(PartOfPath,PartPath,Path) ).
 
 
 %+PUBLIC
