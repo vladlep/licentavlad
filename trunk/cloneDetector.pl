@@ -46,8 +46,8 @@ uniqueList(List,ResultedList):-
 runAll:-findall(_,runFromDir("./factbase"),_),
 	listing(projectMatch).
 
-runFromDir(Directory):-directory_files(Directory,List),
-	combine2(List,Proj1,Proj2),
+runFromDir(Directory):-directory_files(Directory,ListFiles),
+	combine2(ListFiles,Proj1,Proj2),
 	run(Proj1,Proj2).
 
 qlfExtension(Name):-file_name_extension(_, ".qlf", Name).
@@ -110,7 +110,7 @@ generateAllMatchingClasses(Name1,Name2):-
 	assert(match(Id1,Name1,Id2,Name2,high)).
 
 
-assertClassMatch(Id1,Name1,Id2,Name2):-
+assertClassMatchLow(Id1,Name1,Id2,Name2):-
 	(
 	not(match(Id1,_,_,_,medium)),
 	not(match(_,_,Id2,_,medium)),
@@ -122,8 +122,7 @@ assertClassMatch(Id1,Name1,Id2,Name2):-
 	.
 compare2Classes(Id1,Name1,Id2,Name2):-
 	compareClassLevel(Id1,Id2),
-
-	assertClassMatch(Id1,Name1,Id2,Name2),
+	assertClassMatchLow(Id1,Name1,Id2,Name2),
 
 	compareMethodLevel(Id1,Name1,Id2,Name2) .
 
@@ -209,7 +208,6 @@ methodMetrics(MethodId1,MethodId2):-
 	.
 
 callDependencies(MethodId1,MethodId2):-
-	findall(CalledMet1,callT1(MethodId1,_,CalledMet1),ListMet1),
 	findall(CalledMet1,callT1(MethodId1,_,CalledMet1),ListMet1),
 	uniqueList(ListMet1,UniqueList1),
 	count(UniqueList1,NrCalledMet1),
