@@ -97,12 +97,13 @@ run(Proj1,Proj2):-
 	writef("\n"),
 
 	retractall(match(_,_,_,_,_)),
-	clearDatabase1,
-	clearDatabase2,
+%	clearDatabase1,
+%	clearDatabase2,
 
 	TotalMatches is NrHighMatches+ NrMedMatches +NrLowMatches,
 	delta(TotalMatches,NrCls1,NrUnmatched),
 	TotalMatches> 0,
+%	NrHighMatches>0,
 	assert(projectMatch(Proj1,Proj2,NrHighMatches,NrMedMatches,NrLowMatches,NrUnmatched)).
 
 
