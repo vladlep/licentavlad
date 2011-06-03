@@ -50,7 +50,7 @@ runFromDir(Directory):-directory_files(Directory,ListFiles),
 	combine2(ListFiles,Proj1,Proj2),
 	run(Proj1,Proj2).
 
-qlfExtension(Name):-file_name_extension(_, ".pl", Name).
+qlfExtension(Name):-file_name_extension(_, ".qlf", Name).
 
 combine2(List,Proj1,Proj2):-
 	member(Proj1,List),
@@ -97,8 +97,8 @@ run(Proj1,Proj2):-
 	writef("\n"),
 
 	retractall(match(_,_,_,_,_)),
-%	clearDatabase1,
-%	clearDatabase2,
+	clearDatabase1,
+	clearDatabase2,
 
 	TotalMatches is NrHighMatches+ NrMedMatches +NrLowMatches,
 	delta(TotalMatches,NrCls1,NrUnmatched),
