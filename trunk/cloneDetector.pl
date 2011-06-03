@@ -3,7 +3,7 @@
 :-dynamic methodMatch/5. %structure that stores the matching/copied methods.
 :-dynamic partialMatch/2. % stores classes that match at meth and class level
 :-dynamic partialMetMatch/2.
-:-dynamic projectMatch/2.
+:-dynamic projectMatch/6.
 :-dynamic signMatch/2.
 %----------------------help functions ---------------------------------%
 
@@ -50,7 +50,7 @@ runFromDir(Directory):-directory_files(Directory,ListFiles),
 	combine2(ListFiles,Proj1,Proj2),
 	run(Proj1,Proj2).
 
-qlfExtension(Name):-file_name_extension(_, ".qlf", Name).
+qlfExtension(Name):-file_name_extension(_, ".pl", Name).
 
 combine2(List,Proj1,Proj2):-
 	member(Proj1,List),
@@ -64,37 +64,52 @@ combine2(List,Proj1,Proj2):-
 
 run(Proj1,Proj2):-
 %	consult('./properties.pl'),
+
 	use_module('./IProject1.pl'),
 	use_module('./IProject2.pl'),
 	load1(Proj1),
 	load2(Proj2),
+
+	findall(Id1,myClass1(Id1,_),ClsPrj1),
+	count(ClsPrj1,NrCls1),
+
+	findall(Id2,myClass2(Id2,_),ClsPrj2),
+	count(ClsPrj2,NrCls2),
+
+	delta(NrCls1,NrCls2,DeltaClasses),
+	MaxNumberDeltaClasses = 4, %can't have more than 4 classes as a difference between 2 projects
+	DeltaClasses < MaxNumberDeltaClasses,
+
+	findall(_,generateAllMatchingClasses,_),
+
 	write(Proj1 - Proj2),
 	writef("\n"),
-
-%	load1('webserver1.qlf'),
-%	load2('webserver2.qlf'),
-
-%	load1('passc2Copy.qlf'),
-%	load2('passc2.qlf'),
-%	load2('newtema2.qlf'),
-
-	findall(Name1-Name2,generateAllMatchingClasses(Name1,Name2),Result),
 	listing(match),
-	count(Result,Nr),
-	writef("\nMatching classes\n"),
-	write(Nr),
+	findall(Id,match(Id,_,_,_,high),HighMatchList),
+	count(HighMatchList,NrHighMatches),
+	findall(Id,match(Id,_,_,_,medium),MedMatchList),
+	count(MedMatchList,NrMedMatches),
+	findall(Id,match(Id,_,_,_,low),LowMatchList),
+	count(LowMatchList,NrLowMatches),
+
+	writef("\nMatching classes"),
+	write(NrHighMatches),
+	writef("\n"),
+
 	retractall(match(_,_,_,_,_)),
 %	clearDatabase1,
 %	clearDatabase2,
 
-	Nr > 1,
-	assert(projectMatch(Proj1,Proj2)).
+	TotalMatches is NrHighMatches+ NrMedMatches +NrLowMatches,
+	delta(TotalMatches,NrCls1,NrUnmatched),
+	TotalMatches> 0,
+	assert(projectMatch(Proj1,Proj2,NrHighMatches,NrMedMatches,NrLowMatches,NrUnmatched)).
 
 
 %generates combination of classes and compares them.
 %If they are copied, they are asserted as match classes.
 
-generateAllMatchingClasses(Name1,Name2):-
+generateAllMatchingClasses:-
 
 	myClass1(Id1,Name1),
 	myClass2(Id2,Name2),
