@@ -1,9 +1,0 @@
-<?xml version="1.0"?>
-<property>
-  <!-- WARNING! Do not delete or edit this file! -->
-    <date>Tue May 17 23:16:31 EEST 2011</date>
-    <ast_version>3.0.1.i</ast_version>
-    <os_arch>amd64</os_arch>
-    <swi_version>51004_64</swi_version>
-    <jre_version>1.6.0_24</jre_version>
-</property>
