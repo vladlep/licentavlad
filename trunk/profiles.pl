@@ -1,4 +1,3 @@
-%-----------------------------------------%
 %loose profile
 projectDelta(loose,
 	     [
@@ -10,7 +9,7 @@ classDelta(loose, % profil larg, care genereaza mai multe match-uri	   [
 	    5  % delta atributes
 	   ,0.6% procent atributes
 
-	   ,2  % delta methods
+	   ,3  % delta methods
 
 	   ,1  % delta Interfaces
 	   ,0.5%ProcentMatchHigh-min procent of method matches for classe to be high
@@ -27,13 +26,3 @@ methodDelta(loose,
 %-----------------------------------------%
 
 % tight profile. Projects have to be closer mathces
-classDelta(2,[
-	      3 % delta atributes
-	   ,0.8 % procent atributes
-
-	     ,1 % delta methods
-	   ,0.8 % procent methods
-	      ,0 % delta Interfaces
-	  ]).
-
-methodDelta(2,[]).

@@ -3,9 +3,7 @@
 %acelasi nume.
 %Prj - in param . Numele proiectului.
 load(Prj):-
-	%atom_concat('c:/users/vll/vlad/LICENTA/licentavlad/factbse/',Prj,Result),
-	atom_concat('./factbase/',Prj,Result),
-	consult(Result).
+	consult(Prj).
 
 
 %+PUBLIC

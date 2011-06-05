@@ -1,9 +1,11 @@
 %Structure of mathc : Id1, Name 1, Id2, name2
+:-include('profiles.pl').
 :-dynamic match/5. % structure that stores the matching/copied classes.
 :-dynamic methodMatch/5. %structure that stores the matching/copied methods.
 :-dynamic partialMatch/2. % stores classes that match at meth and class level
 :-dynamic partialMetMatch/2.
 :-dynamic projectMatch/6.
+:-dynamic profile/1.
 :-dynamic signMatch/2.
 %----------------------help functions ---------------------------------%
 
@@ -43,12 +45,15 @@ uniqueList(List,ResultedList):-
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
-runAll:-findall(_,runFromDir("./factbase"),_),
-	listing(projectMatch).
+runAll:-findall(_,runFromDir('./factbase/',loose),_),
+	listing(projectMatch),
+	retractall(projectMatch(_,_,_,_,_,_)).
 
-runFromDir(Directory):-directory_files(Directory,ListFiles),
+runFromDir(Directory,Profile):-directory_files(Directory,ListFiles),
 	combine2(ListFiles,Proj1,Proj2),
-	run(Proj1,Proj2).
+	atom_concat(Directory,Proj1,Project1),
+	atom_concat(Directory,Proj2,Project2),
+	run(Project1,Project2,Profile).
 
 qlfExtension(Name):-file_name_extension(_, ".qlf", Name).
 
@@ -61,10 +66,12 @@ combine2(List,Proj1,Proj2):-
 	nth1(Index1,List,Proj1),
 	nth1(Index2,List,Proj2),
 	Index1 <Index2.
-
-run(Proj1,Proj2):-
-%	consult('./properties.pl'),
-
+testRun:-run('./factbase/iuraBB.qlf','./factbase/dorinBB.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
+run(Proj1,Proj2,Profile):-
+	retractall(profile(_)),
+	assert(profile(Profile)),
+	profile(Profile),
+	projectDelta(Profile,[MaxNumberDeltaClasses|_]),
 	use_module('./IProject1.pl'),
 	use_module('./IProject2.pl'),
 	load1(Proj1),
@@ -77,7 +84,6 @@ run(Proj1,Proj2):-
 	count(ClsPrj2,NrCls2),
 
 	delta(NrCls1,NrCls2,DeltaClasses),
-	MaxNumberDeltaClasses = 4, %can't have more than 4 classes as a difference between 2 projects
 	DeltaClasses < MaxNumberDeltaClasses,
 
 	findall(_,generateAllMatchingClasses,_),
@@ -92,7 +98,7 @@ run(Proj1,Proj2):-
 	findall(Id,match(Id,_,_,_,low),LowMatchList),
 	count(LowMatchList,NrLowMatches),
 
-	writef("\nMatching classes"),
+	writef("\nHigh matching classes "),
 	write(NrHighMatches),
 	writef("\n"),
 
@@ -165,8 +171,8 @@ compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 %	listing(methodMatch),
 	retractall(methodMatch(_,_,_,_,_)),
 
-
-	MaxNrOfUnmatchingMethods = 1,
+	profile(Profile),
+	classDelta(Profile,[_,_,_,_,_,MaxNrOfUnmatchingMethods,MinProcent]),
 
 	delta(NrOfMatches,NrMet1,Delta1),
 	Delta1<MaxNrOfUnmatchingMethods,
@@ -174,7 +180,7 @@ compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 	delta(NrOfMatches,NrMet2,Delta2),
 	Delta2<MaxNrOfUnmatchingMethods,
 
-	MinProcent = 0.5,
+
 	procent(NrMet1,NrMet2,Procent),
 	Procent> MinProcent,
 
@@ -186,7 +192,9 @@ compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 	   )
 	.
 assertClassMedium(ClassId1,Name1,ClassId2,Name2,ProcentMatchHigh):-
-	ProcentMatchHigh < 0.5, % nu e high, ramane mediu
+	profile(Profile),
+	classDelta(Profile,[_,_,_,_,ProcentMatchHigh,_,_]),
+	ProcentMatchHigh <ProcentMatchHigh, % nu e high, ramane mediu
 	retractall(match(ClassId1,_,_,_,_)),
 	retractall(match(_,_,ClassId2,_,_)),
 	assert(match(ClassId1,Name1,ClassId2,Name2,medium))
@@ -307,12 +315,14 @@ areInterfaces(ClassID1,ClassID2):-
 %ClassID2 - in param. The id of the class from the second prj
 %return : true if the number of atributes is similar.
 compareNrAtrib(Class1,Class2):-
+	profile(Profile),
+	classDelta(Profile,[MaxDifference,MinProcent,_,_,_,_,_]),
 	calcNrAtrib1(Class1,Nr1),
 	calcNrAtrib2(Class2,Nr2),
 
 	((MaxDifference = 5,
 	delta(Nr1,Nr2,Difference),
-	Difference =< MaxDifference,!);
+	Difference =< MaxDifference),
 
 	( MinProcent = 0.6,
 	procent(Nr1,Nr2,Procent),
@@ -324,10 +334,10 @@ compareNrAtrib(Class1,Class2):-
 %ClassID2 - in param. The id of the class from the second prj
 %return : true if the number of methods is similar.
 compareNrMet(ClassID1,ClassID2):-
+	profile(Profile),
+	classDelta(Profile,[_,_,MaxDifference,_,_,_,_]),
 	calcNrMet1(ClassID1,Nr1),
 	calcNrMet2(ClassID2,Nr2),
-
-	MaxDifference = 3,
 	delta(Nr1,Nr2,Difference),
 	Difference =< MaxDifference.
 
@@ -336,10 +346,10 @@ compareNrMet(ClassID1,ClassID2):-
 %ClassID2 - in param. The id of the class from the second prj
 %return : true if the number of interfaces is similar.
 compareNrInterf(ClassID1,ClassID2):-
+	profile(Profile),
+	classDelta(Profile,[_,_,_,MaxDifference,_,_,_]),
 	calcNrInterf1(ClassID1,Nr1),
 	calcNrInterf2(ClassID2,Nr2),
-
-	MaxDifference = 1,
 	delta(Nr1,Nr2,Difference),
 	Difference =< MaxDifference.
 
@@ -368,18 +378,13 @@ operatorsFilter(MethodId1,MethodId2):-
 
 	nrOperators1(MethodId1,*,NrMul1),
 	nrOperators2(MethodId2,*,NrMul2),
-	NrMul1=NrMul2
-
-%	,nrOperators1(MethodId1,&&,NrAnd),
-%	nrOperators2(MethodId2,&&,NrAnd),
-%	NrMul1=NrMul2
-%
-	.
+	NrMul1=NrMul2.
 
 ifFilter(MethodId1,MethodId2):-
+	profile(Profile),
+	methodDelta(Profile,[MaxDifference]),
 	nrOfIf1(MethodId1,Nr1),
 	nrOfIf2(MethodId2,Nr2),
-	MaxDifference = 1,
 	delta(Nr1,Nr2,Delta),
 	Delta =< MaxDifference
 	.
