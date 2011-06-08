@@ -15,7 +15,7 @@ count([],0).
 count([_|Tail],NrOfElements) :- count(Tail,Left), NrOfElements is Left+1.
 
 %returns the absolute diffrence between Nr1 and Nr2.
-delta(Nr1,Nr2,Delta):-(Nr1>=Nr2,Delta is Nr1-Nr2);
+delta(Nr1,Nr2,Delta):-(Nr1>=Nr2,Delta is Nr1-Nr2,!);
 		      (Nr2>Nr1,Delta is Nr2-Nr1).
 
 %returns the percent between Nr1 and Nr2. intre 0 si 1.
@@ -39,13 +39,16 @@ uniqueList(List,ResultedList):-
 
 %------------------- Main logic functions -----------------------------%
 
+testAll:-runAll('./factbase/blackboard/',loose).
+testRun:-run('./factbase/iuraBB.qlf','./factbase/dorinBB.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
+
 %ClassID1 - in param. The id of the class from the first prj
 %ClassID2 - in param. The id of the class from the second prj
 %return : true if classes match.
 %The main function that compares 2 project.
 %Prj1 - in param. Name of first project
 %Prj2 - in param. Name of second project
-runAll:-findall(_,runFromDir('./factbase/',loose),_),
+runAll(Directory,Profile):-findall(_,runFromDir(Directory,Profile),_),
 	listing(projectMatch),
 	retractall(projectMatch(_,_,_,_,_,_)).
 
@@ -66,7 +69,7 @@ combine2(List,Proj1,Proj2):-
 	nth1(Index1,List,Proj1),
 	nth1(Index2,List,Proj2),
 	Index1 <Index2.
-testRun:-run('./factbase/iuraBB.qlf','./factbase/dorinBB.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
+
 run(Proj1,Proj2,Profile):-
 	retractall(profile(_)),
 	assert(profile(Profile)),
