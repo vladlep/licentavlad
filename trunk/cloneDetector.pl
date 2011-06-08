@@ -7,6 +7,7 @@
 :-dynamic projectMatch/6.
 :-dynamic profile/1.
 :-dynamic signMatch/2.
+
 %----------------------help functions ---------------------------------%
 
 %return the number of elements form a list. The result is attached to
@@ -40,7 +41,10 @@ uniqueList(List,ResultedList):-
 %------------------- Main logic functions -----------------------------%
 
 testAll:-runAll('./factbase/blackboard/',loose).
+testAllT:-runAll('./factbase/blackboard/',tight).
+
 testRun:-run('./factbase/iuraBB.qlf','./factbase/dorinBB.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
+testRun2:-run('./factbase/webserver1.qlf','./factbase/webserver2.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
 
 %ClassID1 - in param. The id of the class from the first prj
 %ClassID2 - in param. The id of the class from the second prj
@@ -51,6 +55,14 @@ testRun:-run('./factbase/iuraBB.qlf','./factbase/dorinBB.qlf',loose),	retractall
 runAll(Directory,Profile):-findall(_,runFromDir(Directory,Profile),_),
 	listing(projectMatch),
 	retractall(projectMatch(_,_,_,_,_,_)).
+testDir:-runFromDir('./factbase/blackboard/',loose).
+
+testDirC(Project1,Project2):-
+	Directory = './factbase/blackboard/',
+	directory_files(Directory,ListFiles),
+	combine2(ListFiles,Proj1,Proj2),
+	atom_concat(Directory,Proj1,Project1),
+	atom_concat(Directory,Proj2,Project2).
 
 runFromDir(Directory,Profile):-directory_files(Directory,ListFiles),
 	combine2(ListFiles,Proj1,Proj2),
@@ -87,7 +99,7 @@ run(Proj1,Proj2,Profile):-
 	count(ClsPrj2,NrCls2),
 
 	delta(NrCls1,NrCls2,DeltaClasses),
-	DeltaClasses < MaxNumberDeltaClasses,
+	DeltaClasses =< MaxNumberDeltaClasses,
 
 	findall(_,generateAllMatchingClasses,_),
 
@@ -178,7 +190,7 @@ compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 	classDelta(Profile,[_,_,_,_,_,MaxNrOfUnmatchingMethods,MinProcent]),
 
 	delta(NrOfMatches,NrMet1,Delta1),
-	Delta1<MaxNrOfUnmatchingMethods,
+	Delta1=<MaxNrOfUnmatchingMethods,
 
 	delta(NrOfMatches,NrMet2,Delta2),
 	Delta2<MaxNrOfUnmatchingMethods,
