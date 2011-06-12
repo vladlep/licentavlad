@@ -115,6 +115,8 @@ run(Proj1,Proj2,Profile):-
 
 	writef("\nHigh matching classes "),
 	write(NrHighMatches),
+	writef(" of "),
+	write(NrCls1),
 	writef("\n"),
 
 	retractall(match(_,_,_,_,_)),
@@ -124,8 +126,9 @@ run(Proj1,Proj2,Profile):-
 	TotalMatches is NrHighMatches+ NrMedMatches +NrLowMatches,
 	delta(TotalMatches,NrCls1,NrUnmatched),
 	TotalMatches> 0,
-%	NrHighMatches>0,
-	assert(projectMatch(Proj1,Proj2,NrHighMatches,NrMedMatches,NrLowMatches,NrUnmatched)).
+	NrHighMatches>0,
+	NrUnmatched <3,
+	assert(projectMatch(Proj1,Proj2,high-NrHighMatches,medium-NrMedMatches,low-NrLowMatches,unmatched-NrUnmatched)).
 
 
 %generates combination of classes and compares them.
