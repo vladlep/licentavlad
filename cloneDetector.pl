@@ -338,11 +338,11 @@ compareNrAtrib(Class1,Class2):-
 	calcNrAtrib1(Class1,Nr1),
 	calcNrAtrib2(Class2,Nr2),
 
-	((MaxDifference = 5,
+	((
 	delta(Nr1,Nr2,Difference),
 	Difference =< MaxDifference),
 
-	( MinProcent = 0.6,
+	( 
 	procent(Nr1,Nr2,Procent),
 	MinProcent =<Procent
 	)).
