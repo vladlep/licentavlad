@@ -6,13 +6,9 @@
 :-include('./utilities.pl').
 :-include('./commonClasses.pl').
 
-load1(Prj):-
-%	consult('F:/serios/faculta/licenta/licentavlad/common.pl'),
+load1(Prj):- load(Prj).
 
-	load(Prj).
-myClass1(ClassId,Name):-
-%	load('../commonClasses.pl'),
-	myClass(ClassId,Name).
+myClass1(ClassId,Name):- myClass(ClassId,Name).
 
 calcNrAtrib1(IdClasa,Nr):- calcNrAtrib(IdClasa,Nr) .
 

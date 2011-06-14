@@ -1,4 +1,6 @@
 :-dynamic commonClass/1.
 
 
-commonClass('className').
+commonClass('className1.java').
+commonClass('className2.java').
+commonClass('className3.java').

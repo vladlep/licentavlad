@@ -1,7 +1,7 @@
 %loose profile
 projectDelta(loose,
 	     [
-	      1 % MaxDeltaClasses- diferenta maxima intre nr de clase din primul si cel de-al doilea proiect
+	      2 % MaxDeltaClasses- diferenta maxima intre nr de clase din primul si cel de-al doilea proiect
 
 	     ]).
 classDelta(loose, % profil larg, care genereaza mai multe match-uri	   [
