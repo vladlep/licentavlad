@@ -4,6 +4,30 @@
 	      paramMet2/2,param2/3]).
 :-include('./utilities.pl').
 :-include('./commonClasses.pl').
+:-dynamic classT/4.
+:-dynamic callT/7.
+:-dynamic methodT/7.
+:-dynamic projectS/5.
+:-dynamic sourceFolderS/3.
+:-dynamic compilationUnitT/5.
+:-dynamic classT/4.
+:-dynamic methodT/7.
+:-dynamic fieldT/5.
+:-dynamic paramT/4.
+:-dynamic callT/7.
+:-dynamic forT/7.
+:-dynamic ifT/6.
+:-dynamic operationT/6.
+:-dynamic identT/5.
+:-dynamic typeRefT/4.
+:-dynamic whileT/5.
+:-dynamic arrayTypeT/4.
+:-dynamic extendsT/2.
+:-dynamic implementsT/2.
+:-dynamic modifierT/2.
+:-dynamic interfaceT/1.
+
+
 load2(Prj):-
 %	consult('F:/serios/faculta/licenta/licentavlad/common.pl'),
 	load(Prj).

@@ -38,24 +38,17 @@ uniqueCalc([Head|Tail],UList,Res):-
 uniqueList(List,ResultedList):-
 	uniqueCalc(List,[],ResultedList).
 
-%------------------- Main logic functions -----------------------------%
-
-testAll:-runAll('./factbase/blackboard/',loose).
+%------------------- Test functions -----------------------------%
+testAll:-runAll('./factbase/',loose).
 testAllT:-runAll('./factbase/blackboard/',tight).
-
-testRun:-run('./factbase/iuraBB.qlf','./factbase/dorinBB.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
 testRun2:-run('./factbase/webserver1.qlf','./factbase/webserver2.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
+testRun:-run('./factbase/georgescu.qlf','./factbase/ionescu.qlf',loose),	retractall(projectMatch(_,_,_,_,_,_,_)).
+testDir:-runFromDir('./factbase/blackboard/',loose).
 
-%ClassID1 - in param. The id of the class from the first prj
-%ClassID2 - in param. The id of the class from the second prj
-%return : true if classes match.
-%The main function that compares 2 project.
-%Prj1 - in param. Name of first project
-%Prj2 - in param. Name of second project
+%------------------- Main logic functions -----------------------------%
 runAll(Directory,Profile):-findall(_,runFromDir(Directory,Profile),_),
 	listing(projectMatch),
 	retractall(projectMatch(_,_,_,_,_,_)).
-testDir:-runFromDir('./factbase/blackboard/',loose).
 
 testDirC(Project1,Project2):-
 	Directory = './factbase/blackboard/',
@@ -82,6 +75,9 @@ combine2(List,Proj1,Proj2):-
 	nth1(Index2,List,Proj2),
 	Index1 <Index2.
 
+%The main function that compares 2 project.
+%Prj1 - in param. Name of first project
+%Prj2 - in param. Name of second project
 run(Proj1,Proj2,Profile):-
 	retractall(profile(_)),
 	assert(profile(Profile)),
@@ -120,14 +116,17 @@ run(Proj1,Proj2,Profile):-
 	writef("\n"),
 
 	retractall(match(_,_,_,_,_)),
-%	clearDatabase1,
-%	clearDatabase2,
+	clearDatabase1,
+	clearDatabase2,
 
 	TotalMatches is NrHighMatches+ NrMedMatches +NrLowMatches,
 	delta(TotalMatches,NrCls1,NrUnmatched),
-	TotalMatches> 0,
-	NrHighMatches>0,
-	NrUnmatched <3,
+	projectDelta(Profile,[_,MinTotalMatches,MinHighMatches,MinMedMatches,
+			      MaxNrUnmatched]),
+	TotalMatches>= MinTotalMatches,
+	NrHighMatches>=MinHighMatches,
+	NrMedMatches >= MinMedMatches,
+	NrUnmatched =<MaxNrUnmatched,
 	assert(projectMatch(Proj1,Proj2,high-NrHighMatches,medium-NrMedMatches,low-NrLowMatches,unmatched-NrUnmatched)).
 
 
@@ -166,6 +165,9 @@ compare2Classes(Id1,Name1,Id2,Name2):-
 
 	compareMethodLevel(Id1,Name1,Id2,Name2) .
 
+%ClassID1 - in param. The id of the class from the first prj
+%ClassID2 - in param. The id of the class from the second prj
+%return : true if classes match.
 compareClassLevel(ClassID1,ClassID2):-
 	areInterfaces(ClassID1,ClassID2),
 	compareNrAtrib(ClassID1,ClassID2),
@@ -209,10 +211,10 @@ compareMethodLevel(ClassId1,Name1,ClassId2,Name2):-
 	    assertClassMedium(ClassId1,Name1,ClassId2,Name2,ProcentMatchHigh)
 	   )
 	.
-assertClassMedium(ClassId1,Name1,ClassId2,Name2,ProcentMatchHigh):-
+assertClassMedium(ClassId1,Name1,ClassId2,Name2,ProcentMatch):-
 	profile(Profile),
 	classDelta(Profile,[_,_,_,_,ProcentMatchHigh,_,_]),
-	ProcentMatchHigh <ProcentMatchHigh, % nu e high, ramane mediu
+	ProcentMatch <ProcentMatchHigh, % nu e high, ramane mediu
 	retractall(match(ClassId1,_,_,_,_)),
 	retractall(match(_,_,ClassId2,_,_)),
 	assert(match(ClassId1,Name1,ClassId2,Name2,medium))
@@ -342,7 +344,7 @@ compareNrAtrib(Class1,Class2):-
 	delta(Nr1,Nr2,Difference),
 	Difference =< MaxDifference),
 
-	( 
+	(
 	procent(Nr1,Nr2,Procent),
 	MinProcent =<Procent
 	)).

@@ -117,28 +117,28 @@ param(MethodId,ClsId,IdParam):-
 %+PUBLIC
 %remove all entrie from the database
 clearDatabase:-
-	retractall(classT(_,_,_,_)),
-	retractall(blockT(_,_,_,_)),
-	retractall(callT(_,_,_,_,_,_,_)),
-	retractall(methodT(_,_,_,_,_,_,_)),
-	retractall(constructorT(_,_,_,_,_)),
-        retractall(fieldT(_,_,_,_,_)),
-        retractall(literalT(_,_,_,_,_)),
-        retractall(extendsT(_,_)),
-        retractall(implementsT(_,_)),
-        retractall(externT(_)),
-        retractall(interfaceT(_)),
-        retractall(modifierT(_,_)),
-        retractall(compilationUnitT(_,_,_,_,_)),
-        retractall(globalIds(_,_,_,_)),
-        retractall(globalIds(_,_)),
-        retractall(globalIds(_,_,_)),
-        retractall(ri_globalIds(_,_,_)),
-	retractall(paramT(_,_,_,_)).
-
-
-
-
+	abolish(classT/4),
+	abolish(callT/7),
+	abolish(methodT/7),
+	abolish(projectS/5),
+	abolish(fileS/3),
+	abolish(sourceFolderS/3),
+	abolish(compilationUnitT/5),
+	abolish(methodT/7),
+	abolish(fieldT/5),
+	abolish(paramT/4),
+	abolish(callT/7),
+	abolish(forT/7),
+	abolish(ifT/6),
+	abolish(operationT/6),
+	abolish(identT/5),
+	abolish(typeRefT/4),
+	abolish(whileT/5),
+	abolish(arrayTypeT/4),
+	abolish(extendsT/2),
+	abolish(implementsT/2),
+	abolish(modifierT/2),
+	abolish(interfaceT/1).
 
 
 
